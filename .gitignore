@@ -1,0 +1,106 @@
+# ==========================================
+# ChainShield - Root Git Ignore
+# ==========================================
+
+# Operating system
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE and editors
+.vscode/
+.idea/
+.fleet/
+.zed/
+*.swp
+*.swo
+
+# Environment files and secrets
+/backend/.env*
+!/backend/.env.example
+
+/blockchain/.env*
+!/blockchain/.env.example
+
+/security-runner/.env*
+/security-runner/.hmac-cross-language-test.json
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+
+# ==========================================
+# Laravel Backend
+# ==========================================
+
+/backend/vendor/
+/backend/node_modules/
+/backend/public/build/
+/backend/public/hot
+/backend/public/storage
+/backend/.phpunit.cache/
+/backend/.phpunit.result.cache
+/backend/storage/*.key
+
+# ==========================================
+# Blockchain - Hardhat
+# ==========================================
+
+/blockchain/node_modules/
+/blockchain/artifacts/
+/blockchain/cache/
+/blockchain/dist/
+/blockchain/bundle/
+/blockchain/types/
+/blockchain/typechain-types/
+/blockchain/coverage/
+/blockchain/.gas-snapshot
+
+# ==========================================
+# Python Security Runner
+# ==========================================
+
+/security-runner/venv/
+/security-runner/.venv/
+/security-runner/__pycache__/
+/security-runner/.pytest_cache/
+/security-runner/.mypy_cache/
+/security-runner/.ruff_cache/
+/security-runner/htmlcov/
+/security-runner/.coverage
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================================
+# Generated files and logs
+# ==========================================
+
+*.log
+*.tmp
+*.bak
+*.orig
+
+# Database backups and local databases
+/backup_chainshield_before_orphaned.sql
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Test and coverage output
+coverage/
+htmlcov/
+.pytest_cache/
+# Hardhat Ignition generated compilation output
+/blockchain/ignition/deployments/*/artifacts/
+/blockchain/ignition/deployments/*/build-info/
+
+# Local manual integration test scripts
+/backend/test-hmac-fixture.php
+/backend/test-node-process.php
+/backend/test-python-runner.php
