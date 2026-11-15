@@ -12,7 +12,6 @@ class BlockchainService
 {
     public function anchor(AuditBatch $batch): array
     {
-        // 1. Buat catatan transaksi dan cegah anchoring ganda.
         $transaction = DB::transaction(function () use ($batch) {
             $lockedBatch = AuditBatch::query()
                 ->lockForUpdate()
@@ -45,12 +44,7 @@ class BlockchainService
             ]);
         });
 
-        // Menandai apakah bridge sudah memberikan
-        // bukti konfirmasi transaksi blockchain.
-        $blockchainConfirmed = false;
-
         try {
-            // 2. Tentukan lokasi script Node.js.
             $blockchainPath = dirname(base_path())
                 . DIRECTORY_SEPARATOR . 'blockchain';
 
@@ -65,27 +59,23 @@ class BlockchainService
                 );
             }
 
-            // 3. Siapkan environment Node.js.
             $nodeEnvironment = getenv();
-
             $privateKey = getenv('SEPOLIA_PRIVATE_KEY');
 
             if (! is_string($privateKey) || $privateKey === '') {
                 throw new RuntimeException(
-                    'SEPOLIA_PRIVATE_KEY is unavailable in the Laravel process.'
+                    'SEPOLIA_PRIVATE_KEY is unavailable in Laravel process.'
                 );
             }
 
             $nodeEnvironment['SEPOLIA_PRIVATE_KEY'] = $privateKey;
 
-            // Pastikan semua mode diagnostik dinonaktifkan.
             unset(
                 $nodeEnvironment['CHAINSHIELD_PRECHECK'],
                 $nodeEnvironment['CHAINSHIELD_GAS_CHECK'],
                 $nodeEnvironment['CHAINSHIELD_SIGN_CHECK']
             );
 
-            // 4. Jalankan bridge dengan environment.
             $process = new Process(
                 [
                     'node',
@@ -99,55 +89,113 @@ class BlockchainService
             );
 
             $process->setTimeout(120);
-            $process->run();
+
+            $stdoutBuffer = '';
+            $finalResult = null;
+
+            $process->run(function ($type, $buffer) use (
+                &$stdoutBuffer,
+                &$finalResult,
+                $transaction,
+                $batch
+            ) {
+                if ($type !== Process::OUT) {
+                    return;
+                }
+
+                $stdoutBuffer .= $buffer;
+
+                while (($position = strpos($stdoutBuffer, "\n")) !== false) {
+                    $line = trim(substr($stdoutBuffer, 0, $position));
+                    $stdoutBuffer = substr($stdoutBuffer, $position + 1);
+
+                    if ($line === '') {
+                        continue;
+                    }
+
+                    $data = json_decode($line, true);
+
+                    if (! is_array($data)) {
+                        continue;
+                    }
+
+                    if (($data['event'] ?? null) === 'transaction_submitted') {
+                        $hash = $data['transaction_hash'] ?? '';
+
+                        if (
+                            (string) ($data['batch_id'] ?? '') !==
+                                (string) $batch->batch_number
+                            || (string) ($data['chain_id'] ?? '') !==
+                                (string) config('blockchain.chain_id')
+                            || strtolower($data['contract_address'] ?? '') !==
+                                strtolower(config('blockchain.contract_address'))
+                            || ! preg_match('/^0x[a-fA-F0-9]{64}$/', $hash)
+                        ) {
+                            throw new RuntimeException(
+                                'Invalid transaction submission event.'
+                            );
+                        }
+
+                        // Simpan hash segera setelah broadcast.
+                        $transaction->update([
+                            'transaction_hash' => $hash,
+                            'status' => 'pending',
+                            'error_message' => null,
+                        ]);
+                    }
+
+                    if (($data['success'] ?? false) === true) {
+                        $finalResult = $data;
+                    }
+                }
+            });
+
+            // Tangani output terakhir jika tidak diakhiri newline.
+            if (trim($stdoutBuffer) !== '') {
+                $data = json_decode(trim($stdoutBuffer), true);
+
+                if (is_array($data) && ($data['success'] ?? false) === true) {
+                    $finalResult = $data;
+                }
+            }
 
             if (! $process->isSuccessful()) {
                 throw new RuntimeException(
-                    trim(
-                        $process->getErrorOutput()
-                        ?: $process->getOutput()
-                    )
+                    trim($process->getErrorOutput() ?: $process->getOutput())
                 );
             }
 
-            // 5. Baca hasil Node.js.
-            $result = json_decode(
-                trim($process->getOutput()),
-                true,
-                512,
-                JSON_THROW_ON_ERROR
-            );
+            if (! is_array($finalResult)) {
+                throw new RuntimeException(
+                    'Blockchain did not return a valid confirmation.'
+                );
+            }
 
-            // 6. Validasi konfirmasi blockchain.
+            $result = $finalResult;
+
             if (
                 ($result['success'] ?? false) !== true
                 || ($result['verified'] ?? false) !== true
                 || ($result['status'] ?? null) !== 'confirmed'
-                || (string) ($result['batch_id'] ?? '')
-                    !== (string) $batch->batch_number
-                || (string) ($result['chain_id'] ?? '')
-                    !== (string) config('blockchain.chain_id')
-                || strtolower($result['contract_address'] ?? '')
-                    !== strtolower(config('blockchain.contract_address'))
+                || (string) ($result['batch_id'] ?? '') !==
+                    (string) $batch->batch_number
+                || (string) ($result['chain_id'] ?? '') !==
+                    (string) config('blockchain.chain_id')
+                || strtolower($result['contract_address'] ?? '') !==
+                    strtolower(config('blockchain.contract_address'))
                 || ! preg_match(
                     '/^0x[a-fA-F0-9]{64}$/',
                     $result['transaction_hash'] ?? ''
                 )
+                || $transaction->fresh()->transaction_hash !==
+                    $result['transaction_hash']
             ) {
                 throw new RuntimeException(
                     'Blockchain returned an invalid confirmation response.'
                 );
             }
 
-            // Bridge telah memberikan bukti konfirmasi.
-            $blockchainConfirmed = true;
-
-            // 7. Simpan bukti transaksi ke database.
-            DB::transaction(function () use (
-                $transaction,
-                $batch,
-                $result
-            ) {
+            DB::transaction(function () use ($transaction, $batch, $result) {
                 $lockedBatch = AuditBatch::query()
                     ->lockForUpdate()
                     ->findOrFail($batch->id);
@@ -170,9 +218,20 @@ class BlockchainService
             return $result;
 
         } catch (Throwable $e) {
-            // 8. Jangan menandai transaksi failed jika bridge
-            // sudah mengembalikan bukti konfirmasi.
-            if (! $blockchainConfirmed) {
+            // Hash sudah tersimpan berarti transaksi mungkin sudah
+            // berada di blockchain. Jangan langsung menandainya failed.
+            $transaction->refresh();
+
+            if ($transaction->transaction_hash) {
+                $transaction->update([
+                    'status' => 'pending',
+                    'error_message' => mb_substr(
+                        $e->getMessage(),
+                        0,
+                        2000
+                    ),
+                ]);
+            } else {
                 $transaction->update([
                     'status' => 'failed',
                     'error_message' => mb_substr(

@@ -1,4 +1,3 @@
-
 import {
     JsonRpcProvider,
     Wallet,
@@ -187,13 +186,29 @@ async function main() {
     console.error("[DEBUG] Transaction submitted.");
     console.error("[DEBUG] Transaction hash:", tx.hash);
 
+    // Kirim hash ke Laravel segera setelah broadcast.
+    // Laravel akan menyimpannya sebelum menunggu receipt.
+    await new Promise((resolve, reject) => {
+        process.stdout.write(
+            JSON.stringify({
+                event: "transaction_submitted",
+                batch_id: batchId.toString(),
+                transaction_hash: tx.hash,
+                contract_address: CONTRACT_ADDRESS,
+                chain_id: network.chainId.toString(),
+            }) + "\n",
+            (error) => error ? reject(error) : resolve()
+        );
+    });
+
+    // 11. Tunggu konfirmasi blockchain.
     const receipt = await tx.wait();
 
     if (!receipt || receipt.status !== 1) {
         throw new Error("Blockchain transaction failed.");
     }
 
-    // 11. Verifikasi hasil anchoring.
+    // 12. Verifikasi hasil anchoring.
     const verified = await contract.verifyBatch(
         batchId,
         merkleRoot
@@ -203,7 +218,7 @@ async function main() {
         throw new Error("On-chain verification failed.");
     }
 
-    // 12. Output JSON untuk Laravel.
+    // 13. Output hasil akhir untuk Laravel.
     console.log(JSON.stringify({
         success: true,
         batch_id: batchId.toString(),
@@ -219,6 +234,6 @@ async function main() {
 }
 
 main().catch((error) => {
-    console.error(error.message);
+    console.error("[ERROR]", error.message);
     process.exitCode = 1;
 });

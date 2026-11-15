@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('chain_id');
 
             $table->string('contract_address', 42);
+
             $table->string('transaction_hash', 66)
                 ->nullable()
                 ->unique();
@@ -30,6 +31,7 @@ return new class extends Migration
                 'pending',
                 'confirmed',
                 'failed',
+                'orphaned',
             ])->default('pending');
 
             $table->text('error_message')->nullable();
