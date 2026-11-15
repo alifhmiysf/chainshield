@@ -178,6 +178,90 @@ class LabSessionExecutionTest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_scanner_rejects_unknown_options(): void
+{
+    $user = $this->createAuthorizedUser();
+    $target = $this->createTarget($user);
+    $session = $this->createSession($user, $target);
+
+    $runner = $this->mock(PythonSecurityRunnerService::class);
+    $runner->shouldNotReceive('execute');
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson(
+            "/api/v1/lab/sessions/{$session->id}/execute",
+            [
+                'scanner_type' => 'sqli',
+                'options' => [
+                    'unexpected_option' => 'test-value',
+                ],
+            ]
+        );
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors([
+            'options.unexpected_option',
+        ]);
+}
+
+
+public function test_scan_result_is_rejected_when_session_target_changes_during_execution(): void
+{
+    $user = $this->createAuthorizedUser();
+
+    $originalTarget = $this->createTarget($user);
+    $replacementTarget = $this->createTarget($user);
+
+    $session = $this->createSession($user, $originalTarget);
+
+    $report = [
+        'target_url' => 'http://127.0.0.1:8000',
+        'scan_type' => 'sqli',
+        'started_at' => now()->subSeconds(5)->toISOString(),
+        'completed_at' => now()->toISOString(),
+        'total_findings' => 0,
+        'findings' => [],
+        'errors' => [],
+    ];
+
+    $runner = $this->mock(PythonSecurityRunnerService::class);
+
+    $runner->shouldReceive('execute')
+        ->once()
+        ->with('sqli', 'http://127.0.0.1:8000', [])
+        ->andReturnUsing(function () use ($session, $replacementTarget, $report) {
+            // Simulasikan perubahan target ketika scanner sedang berjalan.
+            LabSession::whereKey($session->id)->update([
+                'pentest_target_id' => $replacementTarget->id,
+            ]);
+
+            return $report;
+        });
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson(
+            "/api/v1/lab/sessions/{$session->id}/execute",
+            ['scanner_type' => 'sqli']
+        );
+
+    $response->assertStatus(502);
+
+    $this->assertDatabaseHas('lab_sessions', [
+        'id' => $session->id,
+        'pentest_target_id' => $replacementTarget->id,
+    ]);
+
+    $this->assertDatabaseMissing('security_findings', [
+        'lab_session_id' => $session->id,
+    ]);
+
+    $this->assertDatabaseMissing('audit_logs', [
+        'action' => 'lab.session.scan_executed',
+        'entity_type' => 'lab_session',
+        'entity_id' => (string) $session->id,
+    ]);
+}
+
     public function test_successful_scan_saves_findings_and_audit_log(): void
     {
         $user = $this->createAuthorizedUser();
