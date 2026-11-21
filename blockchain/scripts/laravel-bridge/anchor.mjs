@@ -5,8 +5,8 @@ import {
     isHexString,
 } from "ethers";
 
-const RPC_URL =
-    "https://ethereum-sepolia-rpc.publicnode.com";
+const RPC_URL = process.env.SEPOLIA_RPC_URL;
+const PRIVATE_KEY = process.env.SEPOLIA_PRIVATE_KEY;
 
 const EXPECTED_CHAIN_ID = 11155111n;
 
@@ -22,14 +22,21 @@ const ABI = [
 ];
 
 async function main() {
-    // 1. Ambil parameter dari Laravel.
+    // 1. Validasi environment.
+    if (!RPC_URL) {
+        throw new Error("SEPOLIA_RPC_URL is unavailable.");
+    }
+
+    if (!PRIVATE_KEY || !/^0x[0-9a-fA-F]{64}$/.test(PRIVATE_KEY)) {
+        throw new Error("SEPOLIA_PRIVATE_KEY is unavailable or invalid.");
+    }
+
+    // 2. Validasi parameter dari Laravel.
     const [batchIdArg, rootArg, totalRecordsArg] =
         process.argv.slice(2);
 
     if (!batchIdArg || !rootArg || !totalRecordsArg) {
-        throw new Error(
-            "Missing batchId, merkleRoot, or totalRecords."
-        );
+        throw new Error("Missing batch ID, Merkle Root, or total records.");
     }
 
     if (!/^[1-9]\d*$/.test(batchIdArg)) {
@@ -48,147 +55,126 @@ async function main() {
         : `0x${rootArg}`;
 
     if (!isHexString(merkleRoot, 32)) {
-        throw new Error("Invalid Merkle Root.");
+        throw new Error("Invalid Merkle Root. Expected 32 bytes.");
     }
 
-    // 2. Hubungkan ke Sepolia.
+    // 3. Koneksi ke Sepolia.
     const provider = new JsonRpcProvider(RPC_URL);
 
-    const network = await provider.getNetwork();
+    try {
+        const network = await provider.getNetwork();
 
-    if (network.chainId !== EXPECTED_CHAIN_ID) {
-        throw new Error("Unexpected blockchain network.");
-    }
-
-    // 3. Ambil private key dari environment variable.
-    const privateKey = process.env.SEPOLIA_PRIVATE_KEY;
-
-    if (
-        !privateKey ||
-        !/^0x[0-9a-fA-F]{64}$/.test(privateKey)
-    ) {
-        throw new Error(
-            "Sepolia signer key is unavailable or invalid."
-        );
-    }
-
-    // 4. Buat wallet signer.
-    const signer = new Wallet(privateKey, provider);
-
-    const signerAddress = await signer.getAddress();
-
-    // 5. Hubungkan signer ke smart contract.
-    const contract = new Contract(
-        CONTRACT_ADDRESS,
-        ABI,
-        signer
-    );
-
-    const owner = await contract.owner();
-
-    if (
-        signerAddress.toLowerCase() !== owner.toLowerCase()
-    ) {
-        throw new Error(
-            "Signer is not the contract owner."
-        );
-    }
-
-    // 6. Pastikan batch belum pernah di-anchor.
-    const existingBatch = await contract.auditBatches(batchId);
-
-    if (existingBatch.timestamp !== 0n) {
-        throw new Error("Batch has already been anchored.");
-    }
-
-    // 7. Mode precheck: tidak mengirim transaksi.
-    if (process.env.CHAINSHIELD_PRECHECK === "1") {
-        console.log("PRECHECK_OK");
-        console.log("Batch ID:", batchId.toString());
-        console.log("Merkle Root:", merkleRoot);
-        console.log("Total Records:", totalRecords.toString());
-        console.log("Signer:", signerAddress);
-        console.log("Owner:", owner);
-        console.log("Chain ID:", network.chainId.toString());
-
-        return;
-    }
-
-    // 8. Estimasi gas.
-    console.error("[DEBUG] Starting gas estimation.");
-
-    const gasEstimate = await contract.anchorBatch.estimateGas(
-        batchId,
-        merkleRoot,
-        totalRecords
-    );
-
-    console.error("[DEBUG] Gas estimation successful.");
-    console.error(
-        "[DEBUG] Estimated gas:",
-        gasEstimate.toString()
-    );
-
-    // Mode pemeriksaan gas: berhenti sebelum mengirim transaksi.
-    if (process.env.CHAINSHIELD_GAS_CHECK === "1") {
-        console.log("GAS_CHECK_OK");
-        console.log("Batch ID:", batchId.toString());
-        console.log("Estimated Gas:", gasEstimate.toString());
-        console.log("Signer:", signerAddress);
-
-        return;
-    }
-
-    // 9. Mode pemeriksaan signing: tidak melakukan broadcast.
-    if (process.env.CHAINSHIELD_SIGN_CHECK === "1") {
-        console.error("[DEBUG] Starting transaction preparation.");
-
-        const unsignedTx =
-            await contract.anchorBatch.populateTransaction(
-                batchId,
-                merkleRoot,
-                totalRecords
+        if (network.chainId !== EXPECTED_CHAIN_ID) {
+            throw new Error(
+                `Unexpected network. Expected ${EXPECTED_CHAIN_ID}, received ${network.chainId}.`
             );
+        }
 
-        const populatedTx = await signer.populateTransaction({
-            ...unsignedTx,
-            gasLimit: gasEstimate,
-        });
+        // 4. Pastikan smart contract tersedia.
+        const contractCode = await provider.getCode(CONTRACT_ADDRESS);
 
-        console.error(
-            "[DEBUG] Transaction preparation successful."
+        if (!contractCode || contractCode === "0x") {
+            throw new Error("Smart contract not found at configured address.");
+        }
+
+        // 5. Buat signer.
+        const signer = new Wallet(PRIVATE_KEY, provider);
+        const signerAddress = await signer.getAddress();
+
+        const contract = new Contract(
+            CONTRACT_ADDRESS,
+            ABI,
+            signer
         );
 
-        const signedTx =
-            await signer.signTransaction(populatedTx);
+        // 6. Pastikan signer merupakan owner kontrak.
+        const owner = await contract.owner();
 
-        console.error(
-            "[DEBUG] Transaction signing successful."
+        if (signerAddress.toLowerCase() !== owner.toLowerCase()) {
+            throw new Error(
+                `Signer is not contract owner. Signer: ${signerAddress}, Owner: ${owner}.`
+            );
+        }
+
+        // 7. Pastikan batch belum pernah di-anchor.
+        const existingBatch = await contract.auditBatches(batchId);
+
+        if (existingBatch.timestamp !== 0n) {
+            throw new Error("Batch has already been anchored.");
+        }
+
+        // 8. Mode precheck: hanya membaca blockchain.
+        if (process.env.CHAINSHIELD_PRECHECK === "1") {
+            console.log("PRECHECK_OK");
+            console.log("Batch ID:", batchId.toString());
+            console.log("Merkle Root:", merkleRoot);
+            console.log("Total Records:", totalRecords.toString());
+            console.log("Signer:", signerAddress);
+            console.log("Owner:", owner);
+            console.log("Chain ID:", network.chainId.toString());
+
+            return;
+        }
+
+        // 9. Estimasi gas.
+        console.error("[DEBUG] Starting gas estimation.");
+
+        const gasEstimate = await contract.anchorBatch.estimateGas(
+            batchId,
+            merkleRoot,
+            totalRecords
         );
 
-        console.log("SIGN_CHECK_OK");
-        console.log("Batch ID:", batchId.toString());
-        console.log("Signed transaction length:", signedTx.length);
-        console.log("Broadcast:", false);
+        console.error("[DEBUG] Gas estimation successful.");
+        console.error("[DEBUG] Estimated gas:", gasEstimate.toString());
 
-        return;
-    }
+        if (process.env.CHAINSHIELD_GAS_CHECK === "1") {
+            console.log("GAS_CHECK_OK");
+            console.log("Batch ID:", batchId.toString());
+            console.log("Estimated Gas:", gasEstimate.toString());
+            console.log("Signer:", signerAddress);
 
-    // 10. Kirim transaksi ke Sepolia.
-    console.error("[DEBUG] Starting transaction submission.");
+            return;
+        }
 
-    const tx = await contract.anchorBatch(
-        batchId,
-        merkleRoot,
-        totalRecords
-    );
+        // 10. Mode signing: tidak melakukan broadcast.
+        if (process.env.CHAINSHIELD_SIGN_CHECK === "1") {
+            const unsignedTx =
+                await contract.anchorBatch.populateTransaction(
+                    batchId,
+                    merkleRoot,
+                    totalRecords
+                );
 
-    console.error("[DEBUG] Transaction submitted.");
-    console.error("[DEBUG] Transaction hash:", tx.hash);
+            const populatedTx = await signer.populateTransaction({
+                ...unsignedTx,
+                gasLimit: gasEstimate,
+            });
 
-    // Kirim hash ke Laravel segera setelah broadcast.
-    // Laravel akan menyimpannya sebelum menunggu receipt.
-    await new Promise((resolve, reject) => {
+            const signedTx =
+                await signer.signTransaction(populatedTx);
+
+            console.log("SIGN_CHECK_OK");
+            console.log("Batch ID:", batchId.toString());
+            console.log("Signed transaction length:", signedTx.length);
+            console.log("Broadcast:", false);
+
+            return;
+        }
+
+        // 11. Kirim transaksi.
+        console.error("[DEBUG] Starting transaction submission.");
+
+        const tx = await contract.anchorBatch(
+            batchId,
+            merkleRoot,
+            totalRecords
+        );
+
+        console.error("[DEBUG] Transaction submitted.");
+        console.error("[DEBUG] Transaction hash:", tx.hash);
+
+        // Kirim hash transaksi ke Laravel.
         process.stdout.write(
             JSON.stringify({
                 event: "transaction_submitted",
@@ -196,44 +182,45 @@ async function main() {
                 transaction_hash: tx.hash,
                 contract_address: CONTRACT_ADDRESS,
                 chain_id: network.chainId.toString(),
-            }) + "\n",
-            (error) => error ? reject(error) : resolve()
+            }) + "\n"
         );
-    });
 
-    // 11. Tunggu konfirmasi blockchain.
-    const receipt = await tx.wait();
+        // 12. Tunggu konfirmasi.
+        const receipt = await tx.wait();
 
-    if (!receipt || receipt.status !== 1) {
-        throw new Error("Blockchain transaction failed.");
+        if (!receipt || receipt.status !== 1) {
+            throw new Error("Blockchain transaction failed.");
+        }
+
+        // 13. Verifikasi hasil anchoring.
+        const verified = await contract.verifyBatch(
+            batchId,
+            merkleRoot
+        );
+
+        if (!verified) {
+            throw new Error("On-chain verification failed.");
+        }
+
+        console.log(JSON.stringify({
+            success: true,
+            batch_id: batchId.toString(),
+            transaction_hash: receipt.hash,
+            block_number: receipt.blockNumber,
+            gas_used: receipt.gasUsed.toString(),
+            contract_address: CONTRACT_ADDRESS,
+            chain_id: network.chainId.toString(),
+            submitter: signerAddress,
+            status: "confirmed",
+            verified: true,
+        }));
+
+    } finally {
+        provider.destroy();
     }
-
-    // 12. Verifikasi hasil anchoring.
-    const verified = await contract.verifyBatch(
-        batchId,
-        merkleRoot
-    );
-
-    if (!verified) {
-        throw new Error("On-chain verification failed.");
-    }
-
-    // 13. Output hasil akhir untuk Laravel.
-    console.log(JSON.stringify({
-        success: true,
-        batch_id: batchId.toString(),
-        transaction_hash: receipt.hash,
-        block_number: receipt.blockNumber,
-        gas_used: receipt.gasUsed.toString(),
-        contract_address: CONTRACT_ADDRESS,
-        chain_id: network.chainId.toString(),
-        submitter: signerAddress,
-        status: "confirmed",
-        verified: true,
-    }));
 }
 
 main().catch((error) => {
-    console.error("[ERROR]", error.message);
+    console.error("[ERROR]", error.shortMessage || error.message);
     process.exitCode = 1;
 });

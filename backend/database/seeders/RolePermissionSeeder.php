@@ -75,7 +75,7 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'Verify Audit Integrity', 'slug' => 'audit.verify'],
 
             ['name' => 'View Blockchain Records', 'slug' => 'blockchain.view'],
-
+            ['name' => 'Anchor Audit Batches', 'slug' => 'blockchain.anchor'],
             ['name' => 'View Reports', 'slug' => 'reports.view'],
 
             ['name' => 'Manage Users', 'slug' => 'users.manage'],

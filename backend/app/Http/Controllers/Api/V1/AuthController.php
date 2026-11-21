@@ -26,14 +26,41 @@ class AuthController extends Controller
     }
 
     /**
+     * Load user roles and aggregated permissions.
+     */
+    private function loadUserAccess(User $user): User
+    {
+        $user->load('roles.permissions');
+
+        $permissions = $user->roles
+            ->flatMap(fn ($role) => $role->permissions)
+            ->unique('id')
+            ->values();
+
+        $user->setRelation('permissions', $permissions);
+
+        return $user;
+    }
+
+    /**
      * Register new user.
      */
     public function register(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email',
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
         ]);
 
         $user = User::create([
@@ -42,9 +69,10 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        $user = $this->loadUserAccess($user);
+
         $token = $user->createToken('chainshield-api')->plainTextToken;
 
-        // Catat registrasi berhasil.
         $this->securityLogger->log(
             eventType: 'auth.register',
             severity: 'info',
@@ -74,10 +102,8 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        // Periksa kredensial pengguna.
         if (!Auth::attempt($validated)) {
 
-            // 1. Catat aktivitas login gagal.
             $securityEvent = $this->securityLogger->log(
                 eventType: 'auth.login_failed',
                 severity: 'medium',
@@ -85,11 +111,8 @@ class AuthController extends Controller
                 request: $request
             );
 
-            // 2. Periksa apakah pola login gagal
-            //    memenuhi kriteria brute force.
             $this->bruteForceDetector->detect($securityEvent);
 
-            // 3. Tolak proses login.
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -98,9 +121,10 @@ class AuthController extends Controller
         $user = User::where('email', $validated['email'])
             ->firstOrFail();
 
+        $user = $this->loadUserAccess($user);
+
         $token = $user->createToken('chainshield-api')->plainTextToken;
 
-        // Catat login berhasil.
         $this->securityLogger->log(
             eventType: 'auth.login',
             severity: 'info',
@@ -125,10 +149,12 @@ class AuthController extends Controller
      */
     public function me(Request $request)
     {
+        $user = $this->loadUserAccess($request->user());
+
         return response()->json([
             'success' => true,
             'data' => [
-                'user' => $request->user(),
+                'user' => $user,
             ],
         ]);
     }
@@ -140,7 +166,6 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        // Catat logout sebelum token dihapus.
         $this->securityLogger->log(
             eventType: 'auth.logout',
             severity: 'info',

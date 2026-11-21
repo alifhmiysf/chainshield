@@ -60,7 +60,7 @@ class BlockchainService
             }
 
             $nodeEnvironment = getenv();
-            $privateKey = getenv('SEPOLIA_PRIVATE_KEY');
+$privateKey = config('blockchain.private_key');
 
             if (! is_string($privateKey) || $privateKey === '') {
                 throw new RuntimeException(
@@ -69,7 +69,15 @@ class BlockchainService
             }
 
             $nodeEnvironment['SEPOLIA_PRIVATE_KEY'] = $privateKey;
+            $rpcUrl = config('blockchain.rpc_url');
 
+if (! is_string($rpcUrl) || $rpcUrl === '') {
+    throw new RuntimeException(
+        'SEPOLIA_RPC_URL is unavailable in Laravel process.'
+    );
+}
+
+$nodeEnvironment['SEPOLIA_RPC_URL'] = $rpcUrl;
             unset(
                 $nodeEnvironment['CHAINSHIELD_PRECHECK'],
                 $nodeEnvironment['CHAINSHIELD_GAS_CHECK'],
