@@ -7,6 +7,9 @@ import Sidebar from './layouts/Sidebar'
 import Header from './components/Header'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
+import SecurityEvents from './pages/SecurityEvents'
+import SecurityAlerts from './pages/SecurityAlerts'
+
 
 import { useAuth } from './context/AuthContext'
 
@@ -44,6 +47,8 @@ function AppLayout() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/audit-logs" element={<AuditLogs />} />
             <Route path="/audit-batches" element={<AuditBatches />} />
+            <Route path="/security-events" element={<SecurityEvents />} />
+            <Route path="/security-alerts" element={<SecurityAlerts />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
