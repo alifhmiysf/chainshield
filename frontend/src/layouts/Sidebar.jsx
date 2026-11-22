@@ -5,6 +5,7 @@ import {
   Layers3,
   ShieldCheck,
   Bug,
+  ClipboardList,
   Users,
   Shield,
   ChevronLeft,
@@ -57,6 +58,12 @@ const navigation = [
         permission: 'lab.view',
       },
       {
+        label: 'Lab Sessions',
+        icon: ClipboardList,
+        path: '/lab-sessions',
+        permission: 'lab.view',
+      },
+      {
         label: 'Security Events',
         icon: Activity,
         path: '/security-events',
@@ -98,13 +105,13 @@ export default function Sidebar() {
       await logout()
       navigate('/login', { replace: true })
     } catch {
-      // AuthContext clears the local session even if the API fails.
       navigate('/login', { replace: true })
     }
   }
 
   return (
     <aside className="flex h-screen w-[260px] shrink-0 flex-col border-r border-slate-200 bg-white">
+      {/* Brand */}
       <div className="flex h-[76px] items-center gap-3 border-b border-slate-100 px-6">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200">
           <Shield size={22} strokeWidth={2.4} />
@@ -120,6 +127,7 @@ export default function Sidebar() {
         </div>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 space-y-8 overflow-y-auto px-4 py-7">
         {navigation.map((group) => {
           const visibleItems = group.items.filter((item) =>
@@ -170,6 +178,7 @@ export default function Sidebar() {
         })}
       </nav>
 
+      {/* User Profile and Logout */}
       <div className="border-t border-slate-100 p-4">
         <div className="mb-3 flex items-center gap-3 rounded-xl bg-slate-50 p-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 text-blue-700">

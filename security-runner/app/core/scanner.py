@@ -84,6 +84,9 @@ class ScanOrchestrator:
 
         report = scanner.run()
 
+        # Gunakan identifier scanner sesuai kontrak Laravel.
+        report.scan_type = scanner_type
+
         return report.model_dump(mode="json")
 
     @staticmethod

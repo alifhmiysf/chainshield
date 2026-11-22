@@ -27,6 +27,10 @@ class PythonSecurityRunnerService
         $secret = config('chainshield.runner_secret');
         $timeout = (int) config('chainshield.timeout', 120);
 
+        // ======================================
+        // VALIDASI KONFIGURASI
+        // ======================================
+
         if (!is_string($python) || !is_file($python)) {
             throw new RuntimeException(
                 'Python executable tidak ditemukan.'
@@ -55,6 +59,10 @@ class PythonSecurityRunnerService
             );
         }
 
+        // ======================================
+        // MEMBUAT PAYLOAD
+        // ======================================
+
         $payload = [
             'scanner_type' => $scannerType,
             'target_url' => $targetUrl,
@@ -76,6 +84,10 @@ class PythonSecurityRunnerService
             JSON_THROW_ON_ERROR
         );
 
+        // ======================================
+        // FILE KONFIGURASI SEMENTARA
+        // ======================================
+
         $directory = storage_path(
             'app/private/chainshield-scans'
         );
@@ -90,11 +102,54 @@ class PythonSecurityRunnerService
             . bin2hex(random_bytes(16)) . '.json';
 
         try {
-            if (file_put_contents($configPath, $json, LOCK_EX) === false) {
+            if (
+                file_put_contents(
+                    $configPath,
+                    $json,
+                    LOCK_EX
+                ) === false
+            ) {
                 throw new RuntimeException(
                     'Gagal membuat konfigurasi scan sementara.'
                 );
             }
+
+            // ======================================
+            // ENVIRONMENT PROSES PYTHON
+            // ======================================
+
+            $processEnvironment = [
+                'CHAINSHIELD_RUNNER_SECRET' => $secret,
+                'PYTHONIOENCODING' => 'utf-8',
+            ];
+
+            if (PHP_OS_FAMILY === 'Windows') {
+                $requiredWindowsVariables = [
+                    'systemroot',
+                    'windir',
+                    'path',
+                    'pathext',
+                    'comspec',
+                    'temp',
+                    'tmp',
+                ];
+
+                foreach (getenv() as $name => $value) {
+                    if (
+                        in_array(
+                            strtolower($name),
+                            $requiredWindowsVariables,
+                            true
+                        )
+                    ) {
+                        $processEnvironment[$name] = $value;
+                    }
+                }
+            }
+
+            // ======================================
+            // MENJALANKAN PYTHON SECURITY RUNNER
+            // ======================================
 
             $process = new Process(
                 [
@@ -105,14 +160,16 @@ class PythonSecurityRunnerService
                     $configPath,
                 ],
                 $runnerPath,
-                [
-                    'CHAINSHIELD_RUNNER_SECRET' => $secret,
-                ],
+                $processEnvironment,
                 null,
                 $timeout
             );
 
             $process->run();
+
+            // ======================================
+            // VALIDASI HASIL PROSES
+            // ======================================
 
             if (!$process->isSuccessful()) {
                 $errorOutput = trim(
@@ -125,6 +182,10 @@ class PythonSecurityRunnerService
                         : 'Python security runner gagal dijalankan.'
                 );
             }
+
+            // ======================================
+            // DECODE HASIL PYTHON
+            // ======================================
 
             $result = json_decode(
                 $process->getOutput(),
@@ -142,6 +203,11 @@ class PythonSecurityRunnerService
             return $result;
 
         } finally {
+
+            // ======================================
+            // HAPUS FILE KONFIGURASI SEMENTARA
+            // ======================================
+
             if (is_file($configPath)) {
                 @unlink($configPath);
             }

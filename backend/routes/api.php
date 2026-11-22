@@ -16,7 +16,6 @@ use App\Http\Controllers\Api\V1\SecurityAlertController;
 use App\Http\Controllers\Api\V1\SecurityEventController;
 use App\Http\Controllers\Api\V1\SecurityFindingController;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\Process\Process;
 
 
 // ==========================================
@@ -62,88 +61,6 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
-
-
-        // ==================================
-        // TEMPORARY SEPOLIA DIAGNOSTICS
-        // Permission: blockchain.view
-        // ==================================
-
-        Route::get('/diagnostics/sepolia-key', function () {
-
-            $key = getenv('SEPOLIA_PRIVATE_KEY');
-
-            return response()->json([
-                'getenv_present' => is_string($key) && $key !== '',
-                'getenv_format_valid' => is_string($key)
-                    && preg_match('/^0x[a-fA-F0-9]{64}$/', $key) === 1,
-                'env_present' => !empty($_ENV['SEPOLIA_PRIVATE_KEY']),
-                'server_present' => !empty($_SERVER['SEPOLIA_PRIVATE_KEY']),
-            ]);
-
-        })->middleware('permission:blockchain.view');
-
-
-        // ==================================
-        // TEMPORARY NODE.JS PRECHECK
-        // Permission: blockchain.view
-        // Tidak mengirim transaksi.
-        // ==================================
-
-        Route::get('/diagnostics/node-key', function () {
-
-            $nodeEnvironment = getenv();
-
-            $privateKey = getenv('SEPOLIA_PRIVATE_KEY');
-
-            if (!is_string($privateKey) || $privateKey === '') {
-                return response()->json([
-                    'process_successful' => false,
-                    'error_output' => 'SEPOLIA_PRIVATE_KEY is unavailable.',
-                ], 500);
-            }
-
-            $nodeEnvironment['SEPOLIA_PRIVATE_KEY'] = $privateKey;
-            $nodeEnvironment['CHAINSHIELD_PRECHECK'] = '1';
-
-            $blockchainPath = dirname(base_path())
-                . DIRECTORY_SEPARATOR . 'blockchain';
-
-            $scriptPath = $blockchainPath
-                . DIRECTORY_SEPARATOR . 'scripts'
-                . DIRECTORY_SEPARATOR . 'laravel-bridge'
-                . DIRECTORY_SEPARATOR . 'anchor.mjs';
-
-            if (!file_exists($scriptPath)) {
-                return response()->json([
-                    'process_successful' => false,
-                    'error_output' => 'Blockchain bridge script not found.',
-                ], 500);
-            }
-
-            $process = new Process(
-                [
-                    'node',
-                    $scriptPath,
-                    '3',
-                    '60046320373b8bf7432bdb7555b5bd667b0ab9027a8b80d3a6ec86a5a72d0922',
-                    '1',
-                ],
-                $blockchainPath,
-                $nodeEnvironment
-            );
-
-            $process->setTimeout(120);
-            $process->run();
-
-            return response()->json([
-                'process_successful' => $process->isSuccessful(),
-                'output' => trim($process->getOutput()),
-                'error_output' => trim($process->getErrorOutput()),
-                'exit_code' => $process->getExitCode(),
-            ]);
-
-        })->middleware('permission:blockchain.view');
 
 
         // ==================================
@@ -288,10 +205,10 @@ Route::prefix('v1')->group(function () {
         });
 
 
-        // ==================================
+        // ======================================
         // LAB TARGET REGISTRATION
         // Permission: lab.sessions.manage
-        // ==================================
+        // ======================================
 
         Route::middleware('permission:lab.sessions.manage')->group(function () {
 
@@ -303,10 +220,10 @@ Route::prefix('v1')->group(function () {
         });
 
 
-        // ==================================
+        // ======================================
         // LAB SESSION VIEW
         // Permission: lab.view
-        // ==================================
+        // ======================================
 
         Route::middleware('permission:lab.view')->group(function () {
 
@@ -323,10 +240,10 @@ Route::prefix('v1')->group(function () {
         });
 
 
-        // ==================================
+        // ======================================
         // LAB SESSION MANAGEMENT
         // Permission: lab.sessions.manage
-        // ==================================
+        // ======================================
 
         Route::middleware('permission:lab.sessions.manage')->group(function () {
 
@@ -353,10 +270,10 @@ Route::prefix('v1')->group(function () {
         });
 
 
-        // ==================================
+        // ======================================
         // LAB SESSION SCANNER EXECUTION
         // Permission: lab.execute
-        // ==================================
+        // ======================================
 
         Route::middleware('permission:lab.execute')->group(function () {
 
@@ -367,10 +284,11 @@ Route::prefix('v1')->group(function () {
 
         });
 
-        // ==================================
+
+        // ======================================
         // SECURITY FINDING VIEW
         // Permission: lab.view
-        // ==================================
+        // ======================================
 
         Route::middleware('permission:lab.view')->group(function () {
 
@@ -387,10 +305,10 @@ Route::prefix('v1')->group(function () {
         });
 
 
-        // ==================================
+        // ======================================
         // SECURITY FINDING MANAGEMENT
         // Permission: lab.sessions.manage
-        // ==================================
+        // ======================================
 
         Route::middleware('permission:lab.sessions.manage')->group(function () {
 
@@ -417,10 +335,10 @@ Route::prefix('v1')->group(function () {
         });
 
 
-        // ==================================
+        // ======================================
         // AUDIT LOGS
         // Permission: audit-logs.view
-        // ==================================
+        // ======================================
 
         Route::middleware('permission:audit-logs.view')->group(function () {
 
@@ -437,10 +355,10 @@ Route::prefix('v1')->group(function () {
         });
 
 
-        // ==================================
+        // ======================================
         // AUDIT VERIFICATION
         // Permission: audit.verify
-        // ==================================
+        // ======================================
 
         Route::middleware('permission:audit.verify')->group(function () {
 

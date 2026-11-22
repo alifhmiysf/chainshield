@@ -9,6 +9,9 @@ import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import SecurityEvents from './pages/SecurityEvents'
 import SecurityAlerts from './pages/SecurityAlerts'
+import SecurityTesting from './pages/SecurityTesting'
+import LabSessions from './pages/LabSessions'
+
 
 
 import { useAuth } from './context/AuthContext'
@@ -49,6 +52,8 @@ function AppLayout() {
             <Route path="/audit-batches" element={<AuditBatches />} />
             <Route path="/security-events" element={<SecurityEvents />} />
             <Route path="/security-alerts" element={<SecurityAlerts />} />
+            <Route path="/security-testing" element={<SecurityTesting />} />
+            <Route path="/lab-sessions" element={<LabSessions />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
