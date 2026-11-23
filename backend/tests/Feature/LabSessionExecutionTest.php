@@ -135,6 +135,27 @@ class LabSessionExecutionTest extends TestCase
         $response->assertStatus(409);
     }
 
+	
+    public function test_scanner_cannot_execute_completed_session(): void
+{
+    $user = $this->createAuthorizedUser();
+    $target = $this->createTarget($user);
+    $session = $this->createSession($user, $target, 'completed');
+
+    $runner = $this->mock(PythonSecurityRunnerService::class);
+    $runner->shouldNotReceive('execute');
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson(
+            "/api/v1/lab/sessions/{$session->id}/execute",
+            ['scanner_type' => 'sqli']
+        );
+
+    $response->assertStatus(409)
+        ->assertJsonPath('success', false);
+}
+
+
     public function test_scanner_rejects_unapproved_target(): void
     {
         $user = $this->createAuthorizedUser();

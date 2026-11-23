@@ -127,7 +127,7 @@ class SecurityFindingController extends Controller
     }
 
     /**
-     * Memperbarui detail temuan.
+     * Memperbarui detail dan informasi remediation.
      */
     public function update(
         Request $request,
@@ -141,7 +141,11 @@ class SecurityFindingController extends Controller
             $findingId
         );
 
-        if (in_array($finding->labSession->status, ['completed', 'cancelled'], true)) {
+        if (in_array(
+            $finding->labSession->status,
+            ['completed', 'cancelled'],
+            true
+        )) {
             return response()->json([
                 'success' => false,
                 'message' => 'Temuan pada sesi yang sudah selesai atau dibatalkan tidak dapat diubah.',
@@ -167,6 +171,8 @@ class SecurityFindingController extends Controller
                 'between:0,10',
                 'decimal:0,1',
             ],
+            'remediation_notes' => ['sometimes', 'nullable', 'string'],
+            'remediation_evidence' => ['sometimes', 'nullable', 'array'],
         ]);
 
         DB::transaction(function () use (
@@ -215,7 +221,11 @@ class SecurityFindingController extends Controller
             $findingId
         );
 
-        if (in_array($finding->labSession->status, ['completed', 'cancelled'], true)) {
+        if (in_array(
+            $finding->labSession->status,
+            ['completed', 'cancelled'],
+            true
+        )) {
             return response()->json([
                 'success' => false,
                 'message' => 'Status temuan pada sesi yang sudah selesai atau dibatalkan tidak dapat diubah.',
@@ -225,13 +235,19 @@ class SecurityFindingController extends Controller
         $validated = $request->validate([
             'status' => [
                 'required',
-                Rule::in(['open', 'confirmed', 'resolved', 'false_positive']),
+                Rule::in([
+                    'open',
+                    'in_progress',
+                    'resolved',
+                    'false_positive',
+                ]),
             ],
         ]);
 
         $previousStatus = $finding->status;
+        $newStatus = $validated['status'];
 
-        if ($previousStatus === $validated['status']) {
+        if ($previousStatus === $newStatus) {
             return response()->json([
                 'success' => true,
                 'message' => 'Status security finding tidak mengalami perubahan.',
@@ -239,15 +255,37 @@ class SecurityFindingController extends Controller
             ]);
         }
 
+        $allowedTransitions = [
+            'open' => ['in_progress', 'false_positive'],
+            'in_progress' => [
+                'open',
+                'resolved',
+                'false_positive',
+            ],
+            'resolved' => ['in_progress'],
+            'false_positive' => ['open'],
+        ];
+
+        if (!in_array(
+            $newStatus,
+            $allowedTransitions[$previousStatus] ?? [],
+            true
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => "Transisi status dari {$previousStatus} ke {$newStatus} tidak diizinkan.",
+            ], 422);
+        }
+
         DB::transaction(function () use (
             $finding,
-            $validated,
             $previousStatus,
+            $newStatus,
             $request,
             $auditLog
         ) {
             $finding->update([
-                'status' => $validated['status'],
+                'status' => $newStatus,
             ]);
 
             $auditLog->record(
@@ -256,7 +294,7 @@ class SecurityFindingController extends Controller
                     'finding_id' => $finding->id,
                     'session_id' => $finding->lab_session_id,
                     'previous_status' => $previousStatus,
-                    'new_status' => $validated['status'],
+                    'new_status' => $newStatus,
                 ],
                 actor: $request->user(),
                 entityType: 'security_finding',
@@ -286,7 +324,11 @@ class SecurityFindingController extends Controller
             $findingId
         );
 
-        if (in_array($finding->labSession->status, ['completed', 'cancelled'], true)) {
+        if (in_array(
+            $finding->labSession->status,
+            ['completed', 'cancelled'],
+            true
+        )) {
             return response()->json([
                 'success' => false,
                 'message' => 'Temuan pada sesi yang sudah selesai atau dibatalkan tidak dapat dihapus.',

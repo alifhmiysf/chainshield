@@ -21,6 +21,7 @@ import {
   Code,
   Lock,
   Database,
+  Save,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { labService } from '../services/labService'
@@ -42,7 +43,7 @@ const severityStyles = {
 
 const findingStatusStyles = {
   open: 'bg-blue-50 text-blue-700 border-blue-200',
-  confirmed: 'bg-orange-50 text-orange-700 border-orange-200',
+  in_progress: 'bg-orange-50 text-orange-700 border-orange-200',
   resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   false_positive: 'bg-slate-100 text-slate-600 border-slate-200',
 }
@@ -180,6 +181,9 @@ export default function LabSessions() {
     total: 0,
   })
   const [findingsLoading, setFindingsLoading] = useState(false)
+
+  const [remediationForms, setRemediationForms] = useState({})
+  const [remediationSaving, setRemediationSaving] = useState({})
 
   const [form, setForm] = useState({
     pentest_target_id: '',
@@ -326,6 +330,8 @@ export default function LabSessions() {
       comparison_token: '',
     })
     setFindings([])
+    setRemediationForms({})
+    setRemediationSaving({})
     setFindingsPagination({
       current_page: 1,
       last_page: 1,
@@ -444,6 +450,88 @@ export default function LabSessions() {
     }
   }
 
+  async function handleSaveRemediation(event, finding) {
+    event.preventDefault()
+
+    if (!selectedSession) return
+
+    const draft = remediationForms[finding.id] || {}
+
+    const notes =
+      draft.notes ?? finding.remediation_notes ?? ''
+
+    const evidenceText =
+      draft.evidence ??
+      JSON.stringify(finding.remediation_evidence ?? {}, null, 2)
+
+    let parsedEvidence = null
+
+    if (evidenceText.trim() !== '') {
+      try {
+        parsedEvidence = JSON.parse(evidenceText)
+      } catch {
+        setError(
+          `Evidence JSON pada finding #${finding.id} tidak valid.`,
+        )
+        return
+      }
+
+      if (
+        parsedEvidence === null ||
+        typeof parsedEvidence !== 'object'
+      ) {
+        setError(
+          'Remediation evidence harus berupa JSON object atau array.',
+        )
+        return
+      }
+    }
+
+    setError('')
+    setSuccess('')
+
+    setRemediationSaving((current) => ({
+      ...current,
+      [finding.id]: true,
+    }))
+
+    try {
+      await labService.updateFinding(
+        selectedSession.id,
+        finding.id,
+        {
+          remediation_notes: notes,
+          remediation_evidence: parsedEvidence,
+        },
+      )
+
+      setRemediationForms((current) => {
+        const updated = { ...current }
+        delete updated[finding.id]
+        return updated
+      })
+
+      setSuccess(
+        `Remediation untuk finding #${finding.id} berhasil diperbarui.`,
+      )
+
+      await loadFindings(
+        selectedSession.id,
+        findingsPagination.current_page,
+      )
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          'Gagal menyimpan remediation finding.',
+      )
+    } finally {
+      setRemediationSaving((current) => ({
+        ...current,
+        [finding.id]: false,
+      }))
+    }
+  }
+
   async function handleSessionAction(action, session) {
     setError('')
     setSuccess('')
@@ -505,6 +593,8 @@ export default function LabSessions() {
     setSelectedSession(null)
     setScannerResult(null)
     setFindings([])
+    setRemediationForms({})
+    setRemediationSaving({})
     setError('')
     setSuccess('')
   }
@@ -1294,68 +1384,221 @@ export default function LabSessions() {
                         </p>
                       </div>
                     ) : (
-                      findings.map((finding) => (
-                        <div key={finding.id} className="space-y-3 p-4">
-                          <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
-                            <div className="min-w-0">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-xs font-semibold text-slate-400">
-                                  #{finding.id}
-                                </span>
-                                <SeverityBadge severity={finding.severity} />
-                                <FindingStatusBadge status={finding.status} />
+                      findings.map((finding) => {
+                        const remediationDraft =
+                          remediationForms[finding.id] || {}
+
+                        const remediationNotes =
+                          remediationDraft.notes ??
+                          finding.remediation_notes ??
+                          ''
+
+                        const remediationEvidence =
+                          remediationDraft.evidence ??
+                          JSON.stringify(
+                            finding.remediation_evidence ?? {},
+                            null,
+                            2,
+                          )
+
+                        const canEditFinding =
+                          canManage &&
+                          !['completed', 'cancelled'].includes(
+                            selectedSession.status,
+                          )
+
+                        return (
+                          <div key={finding.id} className="space-y-3 p-4">
+                            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
+                              <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="text-xs font-semibold text-slate-400">
+                                    #{finding.id}
+                                  </span>
+                                  <SeverityBadge severity={finding.severity} />
+                                  <FindingStatusBadge status={finding.status} />
+                                </div>
+
+                                <h4 className="mt-2 font-semibold text-slate-900">
+                                  {finding.title}
+                                </h4>
+
+                                <p className="mt-1 text-xs text-slate-500">
+                                  {finding.vulnerability_type}
+                                </p>
                               </div>
 
-                              <h4 className="mt-2 font-semibold text-slate-900">
-                                {finding.title}
-                              </h4>
-
-                              <p className="mt-1 text-xs text-slate-500">
-                                {finding.vulnerability_type}
-                              </p>
+                              {finding.cvss_score !== null &&
+                                finding.cvss_score !== undefined && (
+                                  <div className="shrink-0 rounded-lg bg-slate-100 px-3 py-2 text-center">
+                                    <p className="text-xs text-slate-500">CVSS</p>
+                                    <p className="font-bold text-slate-900">
+                                      {finding.cvss_score}
+                                    </p>
+                                  </div>
+                                )}
                             </div>
 
-                            {finding.cvss_score !== null &&
-                              finding.cvss_score !== undefined && (
-                                <div className="shrink-0 rounded-lg bg-slate-100 px-3 py-2 text-center">
-                                  <p className="text-xs text-slate-500">CVSS</p>
-                                  <p className="font-bold text-slate-900">
-                                    {finding.cvss_score}
+                            <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
+                              {finding.description}
+                            </p>
+
+                            {finding.affected_endpoint && (
+                              <div className="rounded-lg bg-slate-50 p-3">
+                                <p className="text-xs font-semibold text-slate-500">
+                                  Affected Endpoint
+                                </p>
+                                <p className="mt-1 break-all font-mono text-xs text-slate-700">
+                                  {finding.affected_endpoint}
+                                </p>
+                              </div>
+                            )}
+
+                            {finding.recommendation && (
+                              <div className="rounded-lg border border-blue-100 bg-blue-50 p-3">
+                                <p className="text-xs font-semibold text-blue-800">
+                                  Recommendation
+                                </p>
+                                <p className="mt-1 whitespace-pre-wrap text-xs leading-relaxed text-blue-700">
+                                  {finding.recommendation}
+                                </p>
+                              </div>
+                            )}
+
+                            {/* REMEDIATION INFORMATION */}
+                            {(finding.remediation_notes ||
+                              (finding.remediation_evidence &&
+                                Object.keys(finding.remediation_evidence).length > 0)) && (
+                              <div className="rounded-lg border border-emerald-100 bg-emerald-50/50 p-3">
+                                <div className="mb-2 flex items-center gap-2">
+                                  <ShieldCheck
+                                    size={15}
+                                    className="text-emerald-700"
+                                  />
+                                  <p className="text-xs font-semibold text-emerald-800">
+                                    Saved Remediation
                                   </p>
                                 </div>
-                              )}
-                          </div>
 
-                          <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
-                            {finding.description}
-                          </p>
+                                {finding.remediation_notes && (
+                                  <div>
+                                    <p className="text-xs font-semibold text-slate-600">
+                                      Notes
+                                    </p>
+                                    <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
+                                      {finding.remediation_notes}
+                                    </p>
+                                  </div>
+                                )}
 
-                          {finding.affected_endpoint && (
-                            <div className="rounded-lg bg-slate-50 p-3">
-                              <p className="text-xs font-semibold text-slate-500">
-                                Affected Endpoint
-                              </p>
-                              <p className="mt-1 break-all font-mono text-xs text-slate-700">
-                                {finding.affected_endpoint}
-                              </p>
-                            </div>
-                          )}
+                                {finding.remediation_evidence &&
+                                  Object.keys(finding.remediation_evidence).length > 0 && (
+                                    <div className="mt-3">
+                                      <p className="text-xs font-semibold text-slate-600">
+                                        Evidence
+                                      </p>
+                                      <pre className="mt-1 overflow-x-auto rounded-lg bg-white p-3 text-xs text-slate-700">
+                                        {JSON.stringify(
+                                          finding.remediation_evidence,
+                                          null,
+                                          2,
+                                        )}
+                                      </pre>
+                                    </div>
+                                  )}
+                              </div>
+                            )}
 
-                          {finding.recommendation && (
-                            <div className="rounded-lg border border-blue-100 bg-blue-50 p-3">
-                              <p className="text-xs font-semibold text-blue-800">
-                                Recommendation
-                              </p>
-                              <p className="mt-1 whitespace-pre-wrap text-xs leading-relaxed text-blue-700">
-                                {finding.recommendation}
-                              </p>
-                            </div>
-                          )}
+                            {/* REMEDIATION EDIT FORM */}
+                            {canEditFinding && (
+                              <form
+                                onSubmit={(event) =>
+                                  handleSaveRemediation(event, finding)
+                                }
+                                className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4"
+                              >
+                                <div>
+                                  <h5 className="text-sm font-semibold text-slate-800">
+                                    Remediation Management
+                                  </h5>
+                                  <p className="mt-1 text-xs text-slate-500">
+                                    Record the corrective action and supporting evidence.
+                                  </p>
+                                </div>
 
-                          {canManage &&
-                            !['completed', 'cancelled'].includes(
-                              selectedSession.status,
-                            ) && (
+                                <div>
+                                  <label className="mb-1.5 block text-xs font-semibold text-slate-700">
+                                    Remediation Notes
+                                  </label>
+                                  <textarea
+                                    rows={3}
+                                    value={remediationNotes}
+                                    onChange={(event) =>
+                                      setRemediationForms((current) => ({
+                                        ...current,
+                                        [finding.id]: {
+                                          ...current[finding.id],
+                                          notes: event.target.value,
+                                        },
+                                      }))
+                                    }
+                                    placeholder="Describe the corrective action taken..."
+                                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="mb-1.5 block text-xs font-semibold text-slate-700">
+                                    Remediation Evidence (JSON)
+                                  </label>
+                                  <textarea
+                                    rows={5}
+                                    spellCheck={false}
+                                    value={remediationEvidence}
+                                    onChange={(event) =>
+                                      setRemediationForms((current) => ({
+                                        ...current,
+                                        [finding.id]: {
+                                          ...current[finding.id],
+                                          evidence: event.target.value,
+                                        },
+                                      }))
+                                    }
+                                    placeholder={'{\n  "proof": "Describe or reference evidence"\n}'}
+                                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 font-mono text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                  />
+                                  <p className="mt-1 text-xs text-slate-400">
+                                    Enter a valid JSON object or array. Leave empty if there is no evidence.
+                                  </p>
+                                </div>
+
+                                <div className="flex justify-end">
+                                  <button
+                                    type="submit"
+                                    disabled={Boolean(remediationSaving[finding.id])}
+                                    className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                  >
+                                    {remediationSaving[finding.id] ? (
+                                      <>
+                                        <Loader2
+                                          size={14}
+                                          className="animate-spin"
+                                        />
+                                        Saving...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Save size={14} />
+                                        Save Remediation
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+                              </form>
+                            )}
+
+                            {/* FINDING STATUS */}
+                            {canEditFinding && (
                               <div className="flex flex-col gap-2 border-t border-slate-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
                                 <span className="text-xs text-slate-400">
                                   Update finding status
@@ -1372,7 +1615,7 @@ export default function LabSessions() {
                                   className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none focus:border-blue-500"
                                 >
                                   <option value="open">Open</option>
-                                  <option value="confirmed">Confirmed</option>
+                                  <option value="in_progress">In Progress</option>
                                   <option value="resolved">Resolved</option>
                                   <option value="false_positive">
                                     False Positive
@@ -1380,8 +1623,9 @@ export default function LabSessions() {
                                 </select>
                               </div>
                             )}
-                        </div>
-                      ))
+                          </div>
+                        )
+                      })
                     )}
                   </div>
 

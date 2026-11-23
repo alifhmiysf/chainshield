@@ -18,17 +18,22 @@ class SecurityFinding extends Model
         'recommendation',
         'cvss_score',
         'status',
+        'remediation_notes',
+        'remediation_evidence',
     ];
 
     protected function casts(): array
     {
         return [
             'evidence' => 'array',
+            'remediation_evidence' => 'array',
             'cvss_score' => 'decimal:1',
         ];
     }
 
-    // Sesi pengujian yang menghasilkan temuan.
+    /**
+     * Sesi pengujian yang menghasilkan temuan.
+     */
     public function labSession(): BelongsTo
     {
         return $this->belongsTo(LabSession::class);
