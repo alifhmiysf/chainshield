@@ -60,24 +60,40 @@ class BlockchainService
             }
 
             $nodeEnvironment = getenv();
-$privateKey = config('blockchain.private_key');
 
-            if (! is_string($privateKey) || $privateKey === '') {
+            $network = config('blockchain.network');
+            $privateKey = config('blockchain.private_key');
+            $rpcUrl = config('blockchain.rpc_url');
+            $chainId = config('blockchain.chain_id');
+            $contractAddress = config('blockchain.contract_address');
+
+            if ($network === 'sepolia' && (! is_string($privateKey) || $privateKey === '')) {
                 throw new RuntimeException(
-                    'SEPOLIA_PRIVATE_KEY is unavailable in Laravel process.'
+                    'Sepolia private key is unavailable.'
                 );
             }
 
-            $nodeEnvironment['SEPOLIA_PRIVATE_KEY'] = $privateKey;
-            $rpcUrl = config('blockchain.rpc_url');
+            if (! in_array($network, ['localhost', 'sepolia'], true)) {
+                throw new RuntimeException('Unsupported blockchain network.');
+            }
 
-if (! is_string($rpcUrl) || $rpcUrl === '') {
-    throw new RuntimeException(
-        'SEPOLIA_RPC_URL is unavailable in Laravel process.'
-    );
-}
+            if (! is_string($rpcUrl) || $rpcUrl === '') {
+                throw new RuntimeException(
+                    'Blockchain RPC URL is unavailable.'
+                );
+            }
 
-$nodeEnvironment['SEPOLIA_RPC_URL'] = $rpcUrl;
+            if (! is_string($contractAddress) || $contractAddress === '') {
+                throw new RuntimeException(
+                    'Blockchain contract address is unavailable.'
+                );
+            }
+
+            $nodeEnvironment['CHAINSHIELD_NETWORK'] = $network;
+            $nodeEnvironment['CHAINSHIELD_PRIVATE_KEY'] = $privateKey ?? '';
+            $nodeEnvironment['CHAINSHIELD_RPC_URL'] = $rpcUrl;
+            $nodeEnvironment['CHAINSHIELD_CHAIN_ID'] = (string) $chainId;
+            $nodeEnvironment['CHAINSHIELD_CONTRACT_ADDRESS'] = $contractAddress;
             unset(
                 $nodeEnvironment['CHAINSHIELD_PRECHECK'],
                 $nodeEnvironment['CHAINSHIELD_GAS_CHECK'],

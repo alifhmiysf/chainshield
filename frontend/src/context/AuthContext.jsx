@@ -63,12 +63,17 @@ export function AuthProvider({ children }) {
   }
 
   const hasPermission = (permissionSlug) => {
-    return (
-      user?.permissions?.some(
-        (permission) => permission.slug === permissionSlug,
-      ) ?? false
-    )
+  // Super Admin memiliki akses penuh.
+  if (user?.roles?.some((role) => role.slug === 'super-admin')) {
+    return true
   }
+
+  return (
+    user?.permissions?.some(
+      (permission) => permission.slug === permissionSlug,
+    ) ?? false
+  )
+}
 
   return (
     <AuthContext.Provider

@@ -5,13 +5,13 @@ import {
     isHexString,
 } from "ethers";
 
-const RPC_URL = process.env.SEPOLIA_RPC_URL;
-const PRIVATE_KEY = process.env.SEPOLIA_PRIVATE_KEY;
+const NETWORK = process.env.CHAINSHIELD_NETWORK;
+const RPC_URL = process.env.CHAINSHIELD_RPC_URL;
+const PRIVATE_KEY = process.env.CHAINSHIELD_PRIVATE_KEY;
+const CHAIN_ID_VALUE = process.env.CHAINSHIELD_CHAIN_ID;
+const CONTRACT_ADDRESS = process.env.CHAINSHIELD_CONTRACT_ADDRESS;
 
-const EXPECTED_CHAIN_ID = 11155111n;
-
-const CONTRACT_ADDRESS =
-    "0xe9D974Bac52aa0F96E8AD9c254B8F47B69C105E4";
+const EXPECTED_CHAIN_ID = BigInt(CHAIN_ID_VALUE || "0");
 
 const ABI = [
     "function owner() view returns (address)",
@@ -24,11 +24,24 @@ const ABI = [
 async function main() {
     // 1. Validasi environment.
     if (!RPC_URL) {
-        throw new Error("SEPOLIA_RPC_URL is unavailable.");
+        throw new Error("Blockchain RPC URL is unavailable.");
     }
 
-    if (!PRIVATE_KEY || !/^0x[0-9a-fA-F]{64}$/.test(PRIVATE_KEY)) {
-        throw new Error("SEPOLIA_PRIVATE_KEY is unavailable or invalid.");
+    if (EXPECTED_CHAIN_ID <= 0n) {
+        throw new Error("Blockchain chain ID is unavailable or invalid.");
+    }
+
+    if (!CONTRACT_ADDRESS || !/^0x[a-fA-F0-9]{40}$/.test(CONTRACT_ADDRESS)) {
+        throw new Error("Blockchain contract address is unavailable or invalid.");
+    }
+
+    if (!["localhost", "sepolia"].includes(NETWORK)) {
+        throw new Error("Unsupported blockchain network.");
+    }
+
+    if (NETWORK === "sepolia" &&
+        (!PRIVATE_KEY || !/^0x[0-9a-fA-F]{64}$/.test(PRIVATE_KEY))) {
+        throw new Error("Sepolia private key is unavailable or invalid.");
     }
 
     // 2. Validasi parameter dari Laravel.
@@ -78,7 +91,9 @@ async function main() {
         }
 
         // 5. Buat signer.
-        const signer = new Wallet(PRIVATE_KEY, provider);
+        const signer = NETWORK === "localhost"
+            ? await provider.getSigner()
+            : new Wallet(PRIVATE_KEY, provider);
         const signerAddress = await signer.getAddress();
 
         const contract = new Contract(

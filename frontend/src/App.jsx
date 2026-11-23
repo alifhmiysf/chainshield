@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import AuditLogs from './pages/AuditLogs'
@@ -11,8 +10,9 @@ import SecurityEvents from './pages/SecurityEvents'
 import SecurityAlerts from './pages/SecurityAlerts'
 import SecurityTesting from './pages/SecurityTesting'
 import LabSessions from './pages/LabSessions'
-
-
+import Reports from './pages/Reports'
+import Blockchain from './pages/Blockchain'
+import Users from './pages/Users'
 
 import { useAuth } from './context/AuthContext'
 
@@ -48,12 +48,29 @@ function AppLayout() {
         <div className="p-5 md:p-8">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+
+            {/* Audit */}
             <Route path="/audit-logs" element={<AuditLogs />} />
             <Route path="/audit-batches" element={<AuditBatches />} />
+
+            {/* Blockchain */}
+            <Route path="/blockchain" element={<Blockchain />} />
+
+            {/* Security */}
             <Route path="/security-events" element={<SecurityEvents />} />
             <Route path="/security-alerts" element={<SecurityAlerts />} />
             <Route path="/security-testing" element={<SecurityTesting />} />
+
+            {/* Lab */}
             <Route path="/lab-sessions" element={<LabSessions />} />
+
+            {/* Reporting */}
+            <Route path="/reports" element={<Reports />} />
+
+            {/* User Management */}
+            <Route path="/users" element={<Users />} />
+
+            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

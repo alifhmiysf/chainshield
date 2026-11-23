@@ -9,5 +9,7 @@ return [
 
     'contract_address' => env('BLOCKCHAIN_CONTRACT_ADDRESS'),
 
-    'private_key' => env('SEPOLIA_PRIVATE_KEY'),
+    'private_key' => env('BLOCKCHAIN_NETWORK', 'localhost') === 'sepolia'
+        ? env('SEPOLIA_PRIVATE_KEY')
+        : env('LOCAL_PRIVATE_KEY'),
 ];

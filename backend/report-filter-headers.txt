@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Host: 127.0.0.1:8000
+Connection: close
+X-Powered-By: PHP/8.2.12
+Set-Cookie: PHPSESSID=s3luc7sgbfrorid80srscd2n9v; path=/
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Type: text/csv; charset=UTF-8
+Cache-Control: no-cache, private
+Date: Mon, 23 Nov 2026 06:46:49 GMT
+Content-Disposition: attachment; filename=chainshield-security-report.csv
+Access-Control-Allow-Origin: *
+

@@ -1,0 +1,283 @@
+﻿
+﻿"CHAINSHIELD SECURITY REPORT"
+"Generated At","2026-11-23 06:45:15"
+"Start Date",All
+"End Date",All
+
+SUMMARY
+Category,Total
+audit_logs,92
+security_events,106
+security_alerts,1
+security_findings,2
+lab_sessions,9
+audit_batches,4
+blockchain_transactions,33
+
+"AUDIT LOGS"
+Sequence,Actor,Action,"Entity Type","Entity ID","Created At","Current Hash"
+92,"Security Tester",lab.session.completed,lab_session,9,"2026-11-23 03:59:56",97c6ad155cb6be6d446ce8f88ba6bd7c32eb5753d522c5b505df7b11a41fe524
+91,"Security Tester",lab.finding.status_changed,security_finding,3,"2026-11-23 03:58:47",15f94a3c331c31bbc6d8e8ba34e23a110e87e66bfd7d677ba1bb8354f1fa2d24
+90,"Security Tester",lab.finding.status_changed,security_finding,3,"2026-11-23 03:57:33",d0333312685c4fb1ce2806ef257b931ad782e4065c90f7aa8294e2355aac1ca1
+89,"Security Tester",lab.finding.updated,security_finding,3,"2026-11-23 03:55:54",6b2b28facda705b512e0fc7cf49a12d00f1d8586cb2ec1fd6058282a7633d4a2
+88,"Security Tester",lab.session.scan_executed,lab_session,9,"2026-11-23 03:54:13",41a4ab4a4a7a5d2070efafab768544a083c31500f8fa171d73219c3875d68c32
+87,"Security Tester",lab.finding.updated,security_finding,3,"2026-11-23 03:53:25",609ebcb0a37efb25b738eb7e23135c0b9435aaeaf38afd93db40f28ccd181e49
+86,"Security Tester",lab.session.scan_executed,lab_session,9,"2026-11-23 03:52:44",6dde78b97f6ce932c85f19ea083f238d2c51bfc8fb31006e9298c7d293b79907
+85,"Security Tester",lab.finding.status_changed,security_finding,3,"2026-11-23 03:51:27",98fc6796577e5a4b777939e43f996e45fe43b1c101dd1fe73a9dcb8a3d224c9a
+84,"Security Tester",lab.session.scan_executed,lab_session,9,"2026-11-23 03:31:47",a99cbcddb3211286c39a5d6fb1ac3fd25e78932f749fbc7768344a1faf4cbdb3
+83,"Security Tester",lab.session.scan_executed,lab_session,9,"2026-11-23 03:31:35",d2a8fac71913e805e2dfa4744f17b096d0adb5c05c412fcd29cfeb2500aa04a4
+82,"Security Tester",lab.session.scan_executed,lab_session,9,"2026-11-23 03:22:08",000b2db0d01ba1ff6070b250b8f318be702c0c2db78a59fb65bae230f4118f0d
+81,"Security Tester",lab.session.started,lab_session,9,"2026-11-23 03:21:57",3b5d7a676b423a2fead022db59daf361d25d5aad4dd392486809bf20a6aeec6e
+80,"Security Tester",lab.session.created,lab_session,9,"2026-11-23 03:21:51",78f2ac70494f802ed6ca1b265b76256fc7a45eba4dde7c115652f89e467efcc4
+79,"ChainShield Admin",lab.target.approved,pentest_target,10,"2026-11-23 03:21:02",92917a679cd8f67e0cef269b81fce045c5daa038fca718c2c3fd4bf34b383ac4
+78,"Security Tester",lab.target.registered,pentest_target,10,"2026-11-23 03:19:54",5c11ff7ff5837cd26382cf73d418b778daa5c4e2ef0b8cb6f48f69885fa96cda
+77,"Security Tester",lab.session.scan_executed,lab_session,8,"2026-11-23 02:30:19",811fef8837d537176f4f660f659e3805e1ce08940c9be9ad4eff331bb6d46d96
+76,"Security Tester",lab.session.started,lab_session,8,"2026-11-23 02:30:11",653162709fdf4d11920f951b32ce09e0e5bb9cc281498ea206e1fa667ed2951d
+75,"Security Tester",lab.session.created,lab_session,8,"2026-11-23 02:29:57",860172395c36edd8982f95b6d46e1e90f2e3c63c334083444ff25d7214cea1a4
+74,"ChainShield Admin",lab.target.approved,pentest_target,9,"2026-11-23 02:29:18",1f34c341080767c454c3967f874526a9703d1fdc3bc9e0074f9adf78763c6573
+73,"Security Tester",lab.target.registered,pentest_target,9,"2026-11-23 02:28:52",28ecdf2b255d4fccbcf2a9717e70b34b3883f42e7065086508cfb5d01c56128b
+72,"Security Tester",lab.session.completed,lab_session,7,"2026-11-22 08:19:41",9b3adedc6ed64b5e3e81e98ad3b155da0ccf69c23443cbf4e3e9dcaf946c870d
+71,"Security Tester",lab.session.scan_executed,lab_session,7,"2026-11-22 08:16:02",c82ae5cc75aa190200037fd0d9f45d47175875faeec704c8cf6ff74657f1f4d6
+70,"Security Tester",lab.session.cancelled,lab_session,4,"2026-11-22 07:54:27",23638569cbee5fbdaebcb213243934479496a90ed59f84084de9f00e70db8705
+69,"Security Tester",lab.session.cancelled,lab_session,5,"2026-11-22 07:54:23",7f61991a465a319fe1624d93187f625e08b7495c1c3d73cbd09fc475014941fd
+68,"Security Tester",lab.session.scan_executed,lab_session,7,"2026-11-22 07:42:01",9dca23cc67c7d0503375e5c34e7d854408375c1cea2fe0f39dd69d8ed0cf1773
+67,"Security Tester",lab.session.scan_executed,lab_session,7,"2026-11-22 07:40:25",baed8c1481f3ef5bf420cf18656fd873be4e0dc7acb7d8363008f344196e413f
+66,"Security Tester",lab.session.scan_executed,lab_session,7,"2026-11-22 07:35:52",f702c8e5a12c3afcc71d1284903167da8249c9d838808de860754247b13d4377
+65,"Security Tester",lab.session.started,lab_session,7,"2026-11-22 07:35:47",f969c9c5af7e99ef8ee367f6701531a9e2715280b920d763f35583aae00f2ca3
+64,"Security Tester",lab.session.created,lab_session,7,"2026-11-22 07:35:43",31f2a8ca4a9f29f7490d53d0150f70f8d3adc7d9f9bc40d263ee1c231e1028dc
+63,"ChainShield Admin",lab.target.approved,pentest_target,8,"2026-11-22 07:34:17",76450677d555f5324213a0ef46220d9ea066b0bc9c9b7d0626f8e5b55b3b247c
+62,"Security Tester",lab.target.registered,pentest_target,8,"2026-11-22 07:33:57",73b75842c7e691a1492bce78a74d09eabdefe77001c29af3259be677eea4ecc3
+61,"Security Tester",lab.session.scan_executed,lab_session,5,"2026-11-22 07:31:48",9c88d38ff9e65480711aa07e1f7b398006bbf6e5a01584ca60a84e64801d8128
+60,"Security Tester",lab.session.completed,lab_session,6,"2026-11-22 07:11:34",4f1b6f35f69e5977173497315b5db3b093c18a932d5bd579544cd067e210398a
+59,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-22 07:09:12",6109be30d351144c9b834402decd5bec9f34914a5e04b81eb4ac1ceda7737fbd
+58,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-22 07:05:39",e07a55a5e37350ad12cfab6ad572fb77edecce1864a9846a9a95f75def397c58
+57,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-22 06:53:26",e7826ecc15303af95a43a24e4478c67ebdaa78cefc67100a23d42e41863f416b
+56,"Security Tester",lab.session.scan_executed,lab_session,4,"2026-11-22 06:16:54",690781bbd7729b7857d8f96a87d7dba55f76e484f8d3ac4ded2ba83a1540606f
+55,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-22 06:16:29",c1cf039a1acf7e15643bca16503e02d9b8ac256ffd5d1c95097a287607f8eae6
+54,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-22 06:14:35",85078508c3f601febf17e8144fda43d7be0fe0c4330e477861c49c6ca003de09
+53,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-22 06:05:53",334e2d3ae6f623e48927a789f4179e52e50e8750abd6497745092c79b2bfd210
+52,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-22 06:00:54",f32d48eb1f92d36dbc7d70d2dab52992af2dd012d97d36e5ef4887178d3b3c90
+51,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:48:27",68cf02c78215f661bd45097da961d683fc08f85da43aed5b46acaad9f61f4662
+50,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:44:03",69e59f3ba3ba91df49a87d2a2ddbe2fdc0db8f99e4eab56d5bc3f5516aa18f86
+49,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:43:11",526ef717312de7c6f6662754a710f6f4a2b85f322eef1f893b547ee264b5d999
+48,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:42:56",ff71d98c0a47f818bfad95c73c582b75bf4d2a4f1de6b49db5d1df0678337a4d
+47,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:41:48",8dd4d66f2d8778e8561b173580d80a06c753faee8c51d866840b7fcbc7579274
+46,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:41:31",c7b2816ec13d03e5336add94488fd63bc6891f3fa1db8c2206426225e4c4ddef
+45,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:39:31",473395753845f222ea482ce1f414a0215234326c66642b9f9f36143f120fa617
+44,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:39:14",1db9e3e1a174297f54ec1910b0bb1ff8afddc37a12b84568bf9a565dda6ade3f
+43,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:38:51",63c5f26c9c818507341c0ae197650043cd5b4bf1e25f23d6beb4e11b228233e5
+42,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:38:37",caf04d86bef63352d2846aa9241dea2131135530e08ca921a7041d1c2ca1c2a7
+41,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:33:38",ddbcf0032c82a72f7b128265426072b37db818935c94b3e5b9f775184c5d5c7f
+40,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:30:52",9847e10bfb208a3d0e2ffff143b15615704674d42c022ab018fa9e011619c833
+39,"Security Tester",lab.session.scan_executed,lab_session,6,"2026-11-21 17:27:06",87cde375389b3f5d4a4776601afcb60d8dc913e04de1906c8f96c93d21a8f90c
+38,"Security Tester",lab.session.started,lab_session,6,"2026-11-21 17:26:47",9678bf73cb01900c4dcd49ad7505eda6564dd14f5ba581f588f9ba7f54e34ae9
+37,"Security Tester",lab.session.created,lab_session,6,"2026-11-21 17:26:40",d56bab38311965bcb7ebf6cf541a7c599f4720bbf0a73c2c6dcb870912014a9f
+36,"ChainShield Admin",lab.target.approved,pentest_target,7,"2026-11-21 17:25:36",82e922f2ae363e1258288203cd00d3a44bdba4af90c588db1f76cdc9e843c6a0
+35,"Security Tester",lab.target.registered,pentest_target,7,"2026-11-21 17:25:08",077e28f9c0b7fc3c8568e92af3da6795b9b30b575c86e20b4f87f888e2b2a846
+34,"Security Tester",lab.session.scan_executed,lab_session,5,"2026-11-21 17:16:03",0f3983c25dd03824cfcaefa7d8493a5fc31283938896c1ed72f7681e8e8aea17
+33,"Security Tester",lab.session.started,lab_session,5,"2026-11-21 17:15:39",8cfb109883372e4369fa4f311b2a4d22361338058e8c40af1b9d823a4eee29fd
+32,"Security Tester",lab.session.created,lab_session,5,"2026-11-21 17:15:30",2bbb2c69626ec115c6ff0e08bff946c73eaab24a35fb65bb8e3c18ea99e125d5
+31,"ChainShield Admin",lab.target.approved,pentest_target,6,"2026-11-21 17:14:31",02fd8c3c76a8393a86f79f4baf93267a331615be17783ee92469b592e03418a6
+30,"Security Tester",lab.target.registered,pentest_target,6,"2026-11-21 17:12:44",242ca3b4a5f81a6dbbed7fbe7694001c8ec512de7728e06d370b59ea4c6cb313
+29,"Security Tester",lab.session.scan_executed,lab_session,4,"2026-11-21 17:10:47",d76db68efbfdd6f42838a11bd3c30f3b25f9d7e516719184edaf843a4d3f555b
+28,"Security Tester",lab.session.scan_executed,lab_session,4,"2026-11-21 17:01:45",1fbf19fd7cf412e78927fc53913ff9405f8b4d4dbfd902aa4e4fb7f147ad6cf5
+27,"Security Tester",lab.session.scan_executed,lab_session,4,"2026-11-21 17:01:36",1a9a30ccc8e33ee0f03bf2986bab46f495775bbad1a43975161a0c1c18741519
+26,"Security Tester",lab.session.scan_executed,lab_session,4,"2026-11-21 16:58:02",3d8572dc41f10fb982ecbeac1c26126293dfd9bc88ed92f00137d3c104173c22
+25,"Security Tester",lab.session.started,lab_session,4,"2026-11-21 16:47:20",58ecb44984ed0d88477a8d4f96eab121ca74509cfa45bf414c6d43503b808045
+24,"Security Tester",lab.session.created,lab_session,4,"2026-11-21 16:46:51",ea6d768f37f522658937354792e7f3ee01b3309af07fb94ccab61172f1fae239
+23,"Security Tester",lab.session.cancelled,lab_session,2,"2026-11-21 16:32:40",638e3ddbd30051ff3b0e261602d327dfb77ddcc7c7ad05517245be26da662a34
+22,"Security Tester",lab.session.completed,lab_session,3,"2026-11-21 16:32:07",646107ef1780c5ae272af906a4cc594e79d62a7457fd488277be4cda7487ba0c
+21,"Security Tester",lab.session.started,lab_session,3,"2026-11-21 16:31:03",f4845907b25d29501bc0d81dacfa8ecb3237629e9a312b6253653077ec026d88
+20,"Security Tester",lab.session.created,lab_session,3,"2026-11-21 16:30:09",43e519cc2c29e65d40d82d57e32a7df10ee3a25adc929cbdb929f9656ac97558
+19,"ChainShield Admin",lab.target.approved,pentest_target,5,"2026-11-21 16:09:44",b45293cb495ed7e5adfaefaf7a15b035488da0c7364092ea02c57916d43aebba
+18,"Security Tester",lab.target.registered,pentest_target,5,"2026-11-21 16:08:46",63aaf6387fd04ce716b5c8c937503a953a8c26dd5c98f6a296ae2c0cb5a9c2e8
+17,"Security Tester",lab.finding.deleted,security_finding,1,"2026-11-11 13:17:23",247e70d3394e80fe16e57dc13b8e4a076d4daa1fb2d70fa9063f6fa55dec3836
+16,"Security Tester",lab.finding.status_changed,security_finding,1,"2026-11-11 13:16:31",04466b2b47c75d51dafc16cc415f4100a9ba335e4abd783d6541ea4fe955bb3b
+15,"Security Tester",lab.finding.updated,security_finding,1,"2026-11-11 13:15:33",b7547aa9595623800d9b6d342011810ea614fb100fb512e873a985ee68f785f4
+14,"Security Tester",lab.finding.created,security_finding,1,"2026-11-11 13:13:49",561025023e56a4e7ac51be1c150e37af08c18a1c6606285f70b6c93e4cf63fe6
+13,"Security Tester",lab.session.started,lab_session,2,"2026-11-11 13:13:25",09106bc3265d7a4b6a34fbbe0033ea40bd254d3340d10201a404047b409bf783
+12,"Security Tester",lab.session.created,lab_session,2,"2026-11-11 13:12:56",583dc29e701ebddd228e97837bf7adce8b52c98096d07da6e56e01eb602ecb7e
+11,"Security Tester",lab.session.completed,lab_session,1,"2026-11-11 13:07:38",08f5adba501a4b05df386ce7fbc43792ccda612988b29a13dd125c060b50e0ed
+10,"Security Tester",lab.session.started,lab_session,1,"2026-11-11 13:05:32",438dc55d43d2297f2840bd92a61d33791c164fdb84fb226845e93e5bb67364a4
+9,"Security Tester",lab.session.created,lab_session,1,"2026-11-11 13:03:16",0f4f6b1d5a4c52558a374d02f2b9f49f7969ce1ed66b598f1abaaad9ef81cad3
+8,"ChainShield Admin",lab.target.rejected,pentest_target,4,"2026-11-11 12:51:02",1e1f88a01d8b7e2115a2d9b4eee80872230b82da9768ab49365548bbeb8b898c
+7,"Security Tester",lab.target.registered,pentest_target,4,"2026-11-11 12:50:44",f50b794c48ac98e5ed0fd01cddef5bf25cf5c99ece40325e2ed97ee4b4229f6a
+6,"ChainShield Admin",lab.target.approved,pentest_target,3,"2026-11-11 12:47:30",97c14802b49fa2ace0470600725439c74e57902c2b0afd0020cac955aa38198a
+5,"Security Tester",lab.target.registered,pentest_target,3,"2026-11-11 12:46:54",6b57442dd77a80118a992bd5094f8c9f255a2b0770c7208c72f16bb6cd5b099b
+4,,chainshield.sepolia_anchor_test,blockchain_test,sepolia-batch-3,"2026-11-10 13:39:09",52f2931197add30ab6c5b37140c25a22aff4f0e5fc48aa4ca871e04466ea1191
+3,"ChainShield Admin",blockchain.integration_test,blockchain,integration-test,"2026-11-09 14:46:53",ffb4ed9e98508cbe2bb3ef7cdec93cdf84c40f6e3c319aac7f4281f33467a62e
+2,"ChainShield Admin",user.logout,User,1,"2026-11-09 13:12:06",42d827b5b0de0a10b9875e8141007e8a3ec99180c9c62a1bd76f03ed4e7f656a
+1,"ChainShield Admin",user.login,User,1,"2026-11-09 13:11:16",7a338a7360aa23830184ac7d0d631d59da1c17a3639f38442ca9e15d9787cacd
+
+"SECURITY EVENTS"
+"Event Type",Severity,User,"Source IP",Description,"Occurred At"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-23 04:33:55"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-23 04:33:51"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-23 03:21:33"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-23 03:21:15"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-23 03:19:59"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-23 03:19:57"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-23 03:19:23"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-23 03:19:00"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-23 02:29:38"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-23 02:29:20"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-23 02:29:00"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-23 02:28:57"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-23 02:28:29"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-23 02:27:58"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-22 08:19:57"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-22 08:19:56"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-22 08:19:15"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-22 08:18:58"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-22 08:17:47"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-22 08:17:45"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-22 08:06:48"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-22 08:06:27"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-22 07:55:33"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-22 07:55:30"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-22 07:54:02"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-22 07:53:40"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-22 07:46:23"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-22 07:46:21"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-22 07:35:27"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-22 07:34:19"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-22 07:34:02"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-22 07:34:00"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-22 06:39:25"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-22 06:38:53"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-22 06:36:47"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-22 06:00:22"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-22 06:00:03"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-22 05:58:19"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-21 17:26:02"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-21 17:25:40"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-21 17:25:21"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-21 17:25:17"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-21 17:14:54"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-21 17:14:35"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-21 17:13:11"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-21 17:13:08"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-21 16:29:06"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-21 16:28:39"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-21 16:13:06"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-21 16:13:04"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-21 16:11:46"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-21 16:11:36"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-21 16:11:22"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-21 16:09:10"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-21 16:09:07"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-21 16:06:39"
+auth.logout,info,"ChainShield Admin",127.0.0.1,"User logged out successfully.","2026-11-21 16:06:11"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-15 06:43:10"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-11 12:35:52"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:39:43"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-11 10:39:24"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:30:58"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-11 10:30:19"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:15:34"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:08:34"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:08:22"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 08:20:25"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-11 07:42:45"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-11 07:41:33"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 14:01:06"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 13:44:55"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 11:25:07"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 07:35:59"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 07:27:12"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 07:10:28"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 07:04:54"
+auth.login,info,"Test User",127.0.0.1,"User logged in successfully.","2026-11-10 07:00:33"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-09 15:09:11"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-09 15:04:56"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-09 15:02:50"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-09 14:49:24"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-09 13:47:03"
+auth.login,info,"Test User",127.0.0.1,"User logged in successfully.","2026-11-09 13:28:01"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-09 13:25:07"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-09 13:21:29"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-09 12:51:10"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-09 12:37:07"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:31:48"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:31:46"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:31:45"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:31:43"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:31:42"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:31:40"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:31:39"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:31:38"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:31:36"
+auth.login,info,"Test User",127.0.0.1,"User logged in successfully.","2026-11-09 12:16:09"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-09 12:14:40"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-09 12:08:50"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 12:08:30"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-09 11:56:41"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-09 11:56:27"
+auth.logout,info,"Security Tester",127.0.0.1,"User logged out successfully.","2026-11-09 11:54:11"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-09 11:53:09"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-09 11:52:38"
+auth.register,info,"Security Tester",127.0.0.1,"New user registered successfully.","2026-11-09 11:52:13"
+
+"SECURITY ALERTS"
+Title,Severity,Status,"Assigned To","Resolved At","Created At"
+"Possible Brute Force Attack",high,resolved,"Test User","2026-11-23 05:17:35","2026-11-09 12:31:42"
+
+"SECURITY FINDINGS"
+Title,"Vulnerability Type",Severity,CVSS,Status,"Affected Endpoint","Created At"
+"Rate Limit Protection Not Observed","Brute Force",info,,in_progress,https://tik-tok-media-downloader.vercel.app,"2026-11-23 03:31:47"
+"Rate Limit Protection Not Observed","Brute Force",info,,open,http://127.0.0.1:8001,"2026-11-22 07:40:25"
+
+"LAB SESSIONS"
+Name,User,Target,Status,"Started At","Completed At","Created At"
+"testtt cuy","Security Tester","web tiktok",completed,"2026-11-23 03:21:57","2026-11-23 03:59:56","2026-11-23 03:21:51"
+test2,"Security Tester","test 2",running,"2026-11-23 02:30:11",,"2026-11-23 02:29:57"
+kedelapan,"Security Tester","tes cuy",completed,"2026-11-22 07:35:47","2026-11-22 08:19:41","2026-11-22 07:35:42"
+"ChainShield Python Runner End-to-End Integration Test","Security Tester","ChainShield HTTP Scanner Test 2",completed,"2026-11-21 17:26:47","2026-11-22 07:11:34","2026-11-21 17:26:40"
+"ChainShield HTTP Scanner Integration Test","Security Tester","ChainShield HTTP Scanner Test",cancelled,"2026-11-21 17:15:39","2026-11-22 07:54:23","2026-11-21 17:15:30"
+"ChainShield Scanner Integration Test","Security Tester","ChainShield Approval Workflow Test",cancelled,"2026-11-21 16:47:20","2026-11-22 07:54:27","2026-11-21 16:46:51"
+"ChainShield Frontend Lab Session Test","Security Tester","ChainShield Approval Workflow Test",completed,"2026-11-21 16:31:03","2026-11-21 16:32:07","2026-11-21 16:30:09"
+"ChainShield Security Finding Test","Security Tester","ChainShield Audit Integration Test",cancelled,"2026-11-11 13:13:25","2026-11-21 16:32:40","2026-11-11 13:12:56"
+"ChainShield Initial Security Assessment","Security Tester","ChainShield Audit Integration Test",completed,"2026-11-11 13:05:32","2026-11-11 13:07:38","2026-11-11 13:03:16"
+
+"BLOCKCHAIN BATCHES"
+"Batch Number","Merkle Root","Total Records",Status,"Anchored At","Created At"
+4,b250ee615f25a9f706611660948a6bc7aa17f94fd943be6ddd1ec1a9c52355f0,13,anchored,"2026-11-21 15:11:59","2026-11-15 04:42:03"
+3,60046320373b8bf7432bdb7555b5bd667b0ab9027a8b80d3a6ec86a5a72d0922,1,anchored,"2026-11-10 15:29:37","2026-11-10 13:39:27"
+2,7d2cd3f4148e70d1d36ca4965ca572869be2e8fcfa08916c3f082b6e849bd617,1,anchored,"2026-11-10 07:54:40","2026-11-09 14:47:12"
+1,e7de35856fd93efc22eb41883364e61efdf9f71b80cf4ac3313f91e004fd654c,2,anchored,"2026-11-10 11:26:18","2026-11-09 13:40:10"
+
+"BLOCKCHAIN TRANSACTIONS"
+"Batch Number",Network,"Chain ID","Transaction Hash","Block Number","Gas Used",Status,"Confirmed At"
+4,sepolia,11155111,0x85ba7389b82003cc981ae79464cc7f294d5b3e92d719d7db2b127b43e594828a,12182624,461384,confirmed,"2026-11-21 15:11:59"
+4,sepolia,11155111,,,,failed,
+4,sepolia,11155111,,,,failed,
+4,sepolia,11155111,,,,failed,
+4,sepolia,11155111,,,,failed,
+4,sepolia,11155111,,,,failed,
+4,sepolia,11155111,,,,failed,
+4,sepolia,11155111,,,,failed,
+4,sepolia,11155111,,,,failed,
+3,sepolia,11155111,0x2a8d2e97c040c4a645191cf3d8b7007ed59d8f6d30c764f81314d6797db7161d,12105530,461384,confirmed,"2026-11-10 15:29:37"
+3,sepolia,11155111,,,,failed,
+3,sepolia,11155111,,,,failed,
+3,sepolia,11155111,,,,failed,
+1,localhost,31337,0x1c2fb70d72184ef32a4916f47ab964e32557d4934525279f327fc851d4a33c8b,2,115504,confirmed,"2026-11-10 11:26:18"
+2,localhost,31337,0x805bd78527798bb440c2d32a9d3a10153a15e33718351a7e03872a3e99965233,4,115504,confirmed,"2026-11-10 07:54:40"
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,0x9dc221c627d44511056696e9132a83c72ab17fe2cf5e3b698134db6f66e0fa75,3,115504,orphaned,"2026-11-09 15:10:15"
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,

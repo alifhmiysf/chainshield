@@ -16,6 +16,7 @@ import {
   Link,
   Loader2,
   AlertTriangle,
+  Plus,
 } from 'lucide-react'
 import { auditBatchService } from '../services/auditBatchService'
 import { useAuth } from '../context/AuthContext'
@@ -99,7 +100,7 @@ function BatchDetailModal({
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     } catch {
-      // Clipboard access may be unavailable in some browser contexts.
+      // Clipboard access may be unavailable.
     }
   }
 
@@ -183,7 +184,6 @@ function BatchDetailModal({
             <DetailRow label="Updated At" value={formatDate(batch.updated_at)} />
           </div>
 
-          {/* Blockchain Actions */}
           {(isPending && canAnchor) || (isAnchored && canVerify) ? (
             <div className="border-t border-slate-100 pt-5">
               <h3 className="mb-3 text-sm font-semibold text-slate-900">
@@ -292,9 +292,7 @@ function BatchDetailModal({
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
               <div className="flex items-start gap-2">
                 <Check size={18} className="mt-0.5 shrink-0" />
-                <div>
-                  <p className="font-semibold">{actionMessage}</p>
-                </div>
+                <p className="font-semibold">{actionMessage}</p>
               </div>
             </div>
           )}
@@ -366,6 +364,8 @@ export default function AuditBatches() {
   const [batches, setBatches] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [creatingBatch, setCreatingBatch] = useState(false)
+  const [batchMessage, setBatchMessage] = useState('')
   const [error, setError] = useState('')
   const [status, setStatus] = useState('')
   const [search, setSearch] = useState('')
@@ -447,6 +447,47 @@ export default function AuditBatches() {
     }
   }
 
+  const handleCreateBatch = async () => {
+    if (creatingBatch || !canAnchor) return
+
+    setCreatingBatch(true)
+    setBatchMessage('')
+    setError('')
+
+    try {
+      const result = await auditBatchService.createBatch()
+
+      setBatchMessage(
+        result.message || 'Audit batch berhasil dibuat.',
+      )
+
+      setStatus('')
+      setPage(1)
+
+      // Ambil daftar terbaru setelah filter dan halaman diperbarui.
+      const refreshed = await auditBatchService.getBatches({
+        page: 1,
+        per_page: 10,
+      })
+
+      setBatches(refreshed.data || [])
+      setPagination({
+        currentPage: refreshed.current_page || 1,
+        lastPage: refreshed.last_page || 1,
+        total: refreshed.total || 0,
+        from: refreshed.from,
+        to: refreshed.to,
+      })
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          'Gagal membuat audit batch. Periksa koneksi API.',
+      )
+    } finally {
+      setCreatingBatch(false)
+    }
+  }
+
   const handleAnchor = async () => {
     if (!selectedBatch || actionLoading) return
 
@@ -520,18 +561,42 @@ export default function AuditBatches() {
           </p>
         </div>
 
-        <button
-          onClick={() => fetchBatches(true)}
-          disabled={refreshing}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
-        >
-          <RefreshCw
-            size={16}
-            className={refreshing ? 'animate-spin' : ''}
-          />
-          Refresh
-        </button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          {canAnchor && (
+            <button
+              onClick={handleCreateBatch}
+              disabled={creatingBatch || refreshing}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {creatingBatch ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Plus size={16} />
+              )}
+              {creatingBatch ? 'Creating Batch...' : 'Create Batch'}
+            </button>
+          )}
+
+          <button
+            onClick={() => fetchBatches(true)}
+            disabled={refreshing || creatingBatch}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
+          >
+            <RefreshCw
+              size={16}
+              className={refreshing ? 'animate-spin' : ''}
+            />
+            Refresh
+          </button>
+        </div>
       </div>
+
+      {batchMessage && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+          <Check size={18} />
+          {batchMessage}
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

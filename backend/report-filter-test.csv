@@ -1,0 +1,88 @@
+﻿
+﻿"CHAINSHIELD SECURITY REPORT"
+"Generated At","2026-11-23 06:46:49"
+"Start Date",2026-11-10
+"End Date",2026-11-15
+
+SUMMARY
+Category,Total
+audit_logs,14
+security_events,20
+security_alerts,0
+security_findings,0
+lab_sessions,2
+audit_batches,2
+blockchain_transactions,14
+
+"AUDIT LOGS"
+Sequence,Actor,Action,"Entity Type","Entity ID","Created At","Current Hash"
+17,"Security Tester",lab.finding.deleted,security_finding,1,"2026-11-11 13:17:23",247e70d3394e80fe16e57dc13b8e4a076d4daa1fb2d70fa9063f6fa55dec3836
+16,"Security Tester",lab.finding.status_changed,security_finding,1,"2026-11-11 13:16:31",04466b2b47c75d51dafc16cc415f4100a9ba335e4abd783d6541ea4fe955bb3b
+15,"Security Tester",lab.finding.updated,security_finding,1,"2026-11-11 13:15:33",b7547aa9595623800d9b6d342011810ea614fb100fb512e873a985ee68f785f4
+14,"Security Tester",lab.finding.created,security_finding,1,"2026-11-11 13:13:49",561025023e56a4e7ac51be1c150e37af08c18a1c6606285f70b6c93e4cf63fe6
+13,"Security Tester",lab.session.started,lab_session,2,"2026-11-11 13:13:25",09106bc3265d7a4b6a34fbbe0033ea40bd254d3340d10201a404047b409bf783
+12,"Security Tester",lab.session.created,lab_session,2,"2026-11-11 13:12:56",583dc29e701ebddd228e97837bf7adce8b52c98096d07da6e56e01eb602ecb7e
+11,"Security Tester",lab.session.completed,lab_session,1,"2026-11-11 13:07:38",08f5adba501a4b05df386ce7fbc43792ccda612988b29a13dd125c060b50e0ed
+10,"Security Tester",lab.session.started,lab_session,1,"2026-11-11 13:05:32",438dc55d43d2297f2840bd92a61d33791c164fdb84fb226845e93e5bb67364a4
+9,"Security Tester",lab.session.created,lab_session,1,"2026-11-11 13:03:16",0f4f6b1d5a4c52558a374d02f2b9f49f7969ce1ed66b598f1abaaad9ef81cad3
+8,"ChainShield Admin",lab.target.rejected,pentest_target,4,"2026-11-11 12:51:02",1e1f88a01d8b7e2115a2d9b4eee80872230b82da9768ab49365548bbeb8b898c
+7,"Security Tester",lab.target.registered,pentest_target,4,"2026-11-11 12:50:44",f50b794c48ac98e5ed0fd01cddef5bf25cf5c99ece40325e2ed97ee4b4229f6a
+6,"ChainShield Admin",lab.target.approved,pentest_target,3,"2026-11-11 12:47:30",97c14802b49fa2ace0470600725439c74e57902c2b0afd0020cac955aa38198a
+5,"Security Tester",lab.target.registered,pentest_target,3,"2026-11-11 12:46:54",6b57442dd77a80118a992bd5094f8c9f255a2b0770c7208c72f16bb6cd5b099b
+4,,chainshield.sepolia_anchor_test,blockchain_test,sepolia-batch-3,"2026-11-10 13:39:09",52f2931197add30ab6c5b37140c25a22aff4f0e5fc48aa4ca871e04466ea1191
+
+"SECURITY EVENTS"
+"Event Type",Severity,User,"Source IP",Description,"Occurred At"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-15 06:43:10"
+auth.login,info,"Security Tester",127.0.0.1,"User logged in successfully.","2026-11-11 12:35:52"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:39:43"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-11 10:39:24"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:30:58"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-11 10:30:19"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:15:34"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:08:34"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 10:08:22"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-11 08:20:25"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-11 07:42:45"
+auth.login_failed,medium,,127.0.0.1,"Login attempt failed.","2026-11-11 07:41:33"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 14:01:06"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 13:44:55"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 11:25:07"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 07:35:59"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 07:27:12"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 07:10:28"
+auth.login,info,"ChainShield Admin",127.0.0.1,"User logged in successfully.","2026-11-10 07:04:54"
+auth.login,info,"Test User",127.0.0.1,"User logged in successfully.","2026-11-10 07:00:33"
+
+"SECURITY ALERTS"
+Title,Severity,Status,"Assigned To","Resolved At","Created At"
+
+"SECURITY FINDINGS"
+Title,"Vulnerability Type",Severity,CVSS,Status,"Affected Endpoint","Created At"
+
+"LAB SESSIONS"
+Name,User,Target,Status,"Started At","Completed At","Created At"
+"ChainShield Security Finding Test","Security Tester","ChainShield Audit Integration Test",cancelled,"2026-11-11 13:13:25","2026-11-21 16:32:40","2026-11-11 13:12:56"
+"ChainShield Initial Security Assessment","Security Tester","ChainShield Audit Integration Test",completed,"2026-11-11 13:05:32","2026-11-11 13:07:38","2026-11-11 13:03:16"
+
+"BLOCKCHAIN BATCHES"
+"Batch Number","Merkle Root","Total Records",Status,"Anchored At","Created At"
+4,b250ee615f25a9f706611660948a6bc7aa17f94fd943be6ddd1ec1a9c52355f0,13,anchored,"2026-11-21 15:11:59","2026-11-15 04:42:03"
+3,60046320373b8bf7432bdb7555b5bd667b0ab9027a8b80d3a6ec86a5a72d0922,1,anchored,"2026-11-10 15:29:37","2026-11-10 13:39:27"
+
+"BLOCKCHAIN TRANSACTIONS"
+"Batch Number",Network,"Chain ID","Transaction Hash","Block Number","Gas Used",Status,"Confirmed At"
+4,sepolia,11155111,,,,failed,
+4,sepolia,11155111,,,,failed,
+3,sepolia,11155111,0x2a8d2e97c040c4a645191cf3d8b7007ed59d8f6d30c764f81314d6797db7161d,12105530,461384,confirmed,"2026-11-10 15:29:37"
+3,sepolia,11155111,,,,failed,
+3,sepolia,11155111,,,,failed,
+3,sepolia,11155111,,,,failed,
+1,localhost,31337,0x1c2fb70d72184ef32a4916f47ab964e32557d4934525279f327fc851d4a33c8b,2,115504,confirmed,"2026-11-10 11:26:18"
+2,localhost,31337,0x805bd78527798bb440c2d32a9d3a10153a15e33718351a7e03872a3e99965233,4,115504,confirmed,"2026-11-10 07:54:40"
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,
+2,localhost,31337,,,,failed,

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditBatch;
+use App\Services\Audit\AuditBatchService;
 use Illuminate\Http\Request;
+use Throwable;
 
 class AuditBatchController extends Controller
 {
@@ -25,6 +27,7 @@ class AuditBatchController extends Controller
         ]);
 
         $batches = AuditBatch::query()
+            ->with('blockchainTransactions')
             ->when(
                 isset($validated['status']),
                 fn ($query) => $query->where(
@@ -44,10 +47,43 @@ class AuditBatchController extends Controller
 
     public function show(AuditBatch $auditBatch)
     {
+        $auditBatch->load('blockchainTransactions');
+
         return response()->json([
             'success' => true,
             'message' => 'Audit batch retrieved successfully.',
             'data' => $auditBatch,
         ]);
+    }
+
+    /**
+     * Create a new batch from unbatched audit logs.
+     */
+    public function store(AuditBatchService $batchService)
+    {
+        try {
+            $batch = $batchService->createBatch();
+
+            if ($batch === null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada audit log baru yang menunggu batch.',
+                ], 409);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Audit batch berhasil dibuat.',
+                'data' => $batch,
+            ], 201);
+
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat audit batch. Periksa log aplikasi.',
+            ], 500);
+        }
     }
 }

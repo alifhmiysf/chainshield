@@ -1,4 +1,3 @@
-
 import api from './api'
 
 export const auditBatchService = {
@@ -10,6 +9,11 @@ export const auditBatchService = {
   async getBatch(id) {
     const response = await api.get(`/blockchain/batches/${id}`)
     return response.data.data
+  },
+
+  async createBatch() {
+    const response = await api.post('/blockchain/batches')
+    return response.data
   },
 
   async anchorBatch(id) {
